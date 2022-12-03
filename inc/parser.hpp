@@ -12,12 +12,11 @@ class Parser {
  public:
   Parser(std::string);
   ~Parser() = default;
-  struct Node getNodes();
-  void printTree(struct Node, std::string, bool);
+  struct Node getNode();
+  std::vector<struct Token> getTokens();
 
  private:
-  Lexer lexer;
-  struct Node baseNode;
   std::vector<struct Token> tokens;
+  struct Node baseNode;
 };
 }  // namespace HashLang

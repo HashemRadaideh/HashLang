@@ -8,33 +8,16 @@
 
 namespace HashLang {
 Lexer::Lexer(std::string text) {
-  this->tokens = std::vector<struct Token>();
   this->text = text;
   this->posistion = 0;
   this->current = this->text[this->posistion];
-
-  while (this->current != '\0') {
-    struct Token token = nextToken();
-    if (token.type == TokenType::eof)
-      break;
-    else if (token.type != TokenType::skip)
-      this->tokens.emplace_back(token);
-    this->nextCharacter();
-  }
 }
-
-std::vector<struct Token> Lexer::getTokens() { return this->tokens; }
 
 void Lexer::nextCharacter() {
   if (this->posistion >= text.length())
     this->current = '\0';
   else
     this->current = this->text[++this->posistion];
-}
-
-bool Lexer::isNumber(char character) {
-  if (character >= '0' && character <= '9') return true;
-  return false;
 }
 
 struct Token Lexer::nextToken() {
@@ -111,25 +94,8 @@ struct Token Lexer::nextToken() {
   return Token();
 }
 
-void Lexer::printTokens() {
-  for (struct Token token : this->tokens) {
-    if (token.type == TokenType::number)
-      std::cout << "Token: number literal";
-    else if (token.type == TokenType::string)
-      std::cout << "Token: string literal";
-    else if (token.type == TokenType::plus)
-      std::cout << "Token: plus sign";
-    else if (token.type == TokenType::minus)
-      std::cout << "Token: minus sign";
-    else if (token.type == TokenType::asterisk)
-      std::cout << "Token: asterisk";
-    else if (token.type == TokenType::forward_slash)
-      std::cout << "Token: forward slash";
-    else
-      std::cerr << "Unkown token type";
-
-    std::cout << "\nValue: " << token.value << "\nAt: " << token.start << " - "
-              << token.end << std::endl;
-  }
+bool Lexer::isNumber(char character) {
+  if (character >= '0' && character <= '9') return true;
+  return false;
 }
 }  // namespace HashLang

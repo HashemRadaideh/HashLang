@@ -2,10 +2,48 @@
 #include <string>
 
 #include "lexer.hpp"
+#include "node.hpp"
 #include "parser.hpp"
+#include "token.hpp"
 
-using lexer = HashLang::Lexer;
-using parser = HashLang::Parser;
+using lexer = class HashLang::Lexer;
+using node = struct HashLang::Node;
+using parser = class HashLang::Parser;
+using token = struct HashLang::Token;
+using tokenType = enum HashLang::TokenType;
+
+std::string tokenInfo(token tok) {
+  if (tok.type == tokenType::number)
+    return "number literal";
+  else if (tok.type == tokenType::string)
+    return "string literal";
+  else if (tok.type == tokenType::plus)
+    return "plus sign";
+  else if (tok.type == tokenType::minus)
+    return "minus sign";
+  else if (tok.type == tokenType::asterisk)
+    return "asterisk";
+  else if (tok.type == tokenType::forward_slash)
+    return "forward slash";
+  return "Unkown token type";
+}
+
+void printTokens(std::vector<token> tokens) {
+  for (token tok : tokens) {
+    std::cout << "Token: " << tokenInfo(tok.type) << "\nValue: " << tok.value
+              << "\nAt: " << tok.start << " - " << tok.end << std::endl;
+  }
+}
+
+void printTree(node nod, std::string indent = "", bool isLast = true) {
+  std::string branch = isLast ? "└──" : "├──";
+  std::cout << indent << branch << tokenInfo(nod.data.type) << std::endl;
+
+  indent += isLast ? "   " : "│   ";
+
+  bool isLastChild = false;
+  printTree(nod, indent, isLastChild);
+}
 
 auto main(int argc, char *argv[]) -> int {
   while (true) {
@@ -13,11 +51,9 @@ auto main(int argc, char *argv[]) -> int {
     std::string line = "";
     std::getline(std::cin, line);
     if (line != "\0") {
-      // std::cout << line << std::endl;
-      // lexer lex = lexer(line);
-      // lex.printTokens();
       parser par = parser(line);
-      par.printTree(par.getNodes(), "", true);
+      printTokens(par.getTokens());
+      // printTree(par.getNode());
     } else {
       std::cerr << "Input invalid\n";
     }
