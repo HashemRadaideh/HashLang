@@ -10,15 +10,19 @@ Lexer::Lexer(std::string text) {
   this->tokens = std::vector<Token>();
   this->text = text;
   this->posistion = 0;
-  this->current = this->text[++this->posistion];
+  this->current = this->text[this->posistion];
 
   while (this->current != '\0') {
-    nextToken();
+    Token token = nextToken();
+    if (token.type != TokenType::skip)
+      tokens.emplace_back(token);
+    nextCharacter();
   }
 }
 
 bool Lexer::isNumber(char character) {
-  if (current >= '0' && current <= '9' || current == '.') return true;
+  if (current >= '0' && current <= '9')
+    return true;
   return false;
 }
 
@@ -28,80 +32,72 @@ void Lexer::nextCharacter() {
   else
     this->current = '\0';
 }
+void Lexer::backCharacter() { this->current = this->text[--this->posistion]; }
 
-void Lexer::nextToken() {
+Token Lexer::nextToken() {
   switch (this->current) {
-    case ' ':
-      nextCharacter();
-      nextToken();
-      break;
+  case ' ':
+    return Token(TokenType::skip);
+    break;
 
-    case '\n':
-      nextCharacter();
-      nextToken();
-      break;
+  case '\n':
+    return Token(TokenType::skip);
+    break;
 
-    case '\t':
-      nextCharacter();
-      nextToken();
-      break;
+  case '\t':
+    return Token(TokenType::skip);
+    break;
 
-    case '+':
-      tokens.emplace_back(Token(TokenType::plus, "+", this->posistion));
-      nextCharacter();
-      break;
+  case '+':
+    return Token(TokenType::plus, "+", this->posistion - 1);
+    break;
 
-    case '-':
-      tokens.emplace_back(Token(TokenType::minus, "-", this->posistion));
-      nextCharacter();
-      break;
+  case '-':
+    return Token(TokenType::minus, "-", this->posistion - 1);
+    break;
 
-    case '=':
-      tokens.emplace_back(Token(TokenType::equal, "=", this->posistion));
-      nextCharacter();
-      break;
+  case '=':
+    return Token(TokenType::equal, "=", this->posistion - 1);
+    break;
 
-    case '*':
-      tokens.emplace_back(Token(TokenType::asterisk, "*", this->posistion));
-      nextCharacter();
-      break;
+  case '*':
+    return Token(TokenType::asterisk, "*", this->posistion - 1);
+    break;
 
-    case '/':
-      tokens.emplace_back(Token(TokenType::minus, "/", this->posistion));
-      nextCharacter();
-      break;
+  case '/':
+    return Token(TokenType::minus, "/", this->posistion - 1);
+    break;
 
-    case '\\':
-      tokens.emplace_back(Token(TokenType::minus, "\\", this->posistion));
-      nextCharacter();
-      break;
+  case '\\':
+    return Token(TokenType::minus, "\\", this->posistion - 1);
+    break;
 
-    case '(':
-      tokens.emplace_back(
-          Token(TokenType::right_parenthesis, "(", this->posistion));
-      nextCharacter();
-      break;
+  case '(':
+    return Token(TokenType::right_parenthesis, "(", this->posistion - 1);
+    break;
 
-    case ')':
-      tokens.emplace_back(
-          Token(TokenType::left_parenthesis, ")", this->posistion));
-      nextCharacter();
-      break;
+  case ')':
+    return Token(TokenType::left_parenthesis, ")", this->posistion - 1);
+    break;
 
-    default:
-      if (isNumber(this->current)) {
-        Token token = Token();
-        token.type = TokenType::number;
-        token.start = this->posistion;
+  default:
+    if (isNumber(this->current)) {
+      Token token = Token();
+      token.type = TokenType::number;
+      token.start = (!this->posistion) ? this->posistion : this->posistion - 1;
 
-        while (isNumber(this->current)) nextCharacter();
+      do {
+        nextCharacter();
+      } while (isNumber(this->current));
+      backCharacter();
 
-        token.end = this->posistion;
-
-        token.value = text.substr(token.start - 1, token.end + 1);
-        tokens.emplace_back(token);
-      }
+      token.end = this->posistion - 1;
+      token.value = text.substr(token.start, token.end + 1);
+      return token;
+    }
   }
+
+  return Token();
 }
 
 void Lexer::printTokens() {
@@ -125,4 +121,4 @@ void Lexer::printTokens() {
               << token.end << std::endl;
   }
 }
-}  // namespace HashLang
+} // namespace HashLang

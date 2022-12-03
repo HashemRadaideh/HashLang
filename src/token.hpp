@@ -4,7 +4,8 @@
 
 namespace HashLang {
 enum class TokenType {
-  Unkown,
+  unkown,
+  skip,
 
   keyword,
 
@@ -27,7 +28,7 @@ struct Token {
   int start;
   int end;
 
-  Token(TokenType type = TokenType::Unkown, std::string value = "",
+  Token(TokenType type = TokenType::unkown, std::string value = "",
         int start = 0, int end = 0) {
     this->type = type;
     this->value = value;
@@ -35,4 +36,4 @@ struct Token {
     this->end = (start > end) ? start : end;
   }
 };
-} // namespace HashLang
+}  // namespace HashLang
