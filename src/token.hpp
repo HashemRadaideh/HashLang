@@ -24,12 +24,12 @@ enum class TokenType {
 };
 
 struct Token {
-  TokenType type;
+  enum TokenType type;
   std::string value;
   int start;
   int end;
 
-  Token(TokenType type = TokenType::unkown, std::string value = "",
+  Token(enum TokenType type = TokenType::unkown, std::string value = "",
         int start = 0, int end = 0) {
     this->type = type;
     this->value = value;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -8,18 +9,20 @@
 namespace HashLang {
 class Lexer {
  public:
+  Lexer() = default;
   Lexer(std::string);
   ~Lexer() = default;
+  std::vector<struct Token> getTokens();
   void printTokens();
 
  protected:
-  Token nextToken();
+  struct Token nextToken();
   void nextCharacter();
   void backCharacter();
   bool isNumber(char);
 
  private:
-  std::vector<Token> tokens;
+  std::vector<struct Token> tokens;
   std::string text;
   char current;
   int posistion;

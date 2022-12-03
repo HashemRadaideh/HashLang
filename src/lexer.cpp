@@ -1,20 +1,21 @@
 #include "lexer.hpp"
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "token.hpp"
 
 namespace HashLang {
 Lexer::Lexer(std::string text) {
-  this->tokens = std::vector<Token>();
+  this->tokens = std::vector<struct Token>();
   this->text = text;
   this->posistion = 0;
   this->current = this->text[this->posistion];
 
   while (this->current != '\0') {
-    Token token = nextToken();
-    if (token.type != TokenType::eof)
+    struct Token token = nextToken();
+    if (token.type == TokenType::eof)
       break;
     else if (token.type != TokenType::skip)
       this->tokens.emplace_back(token);
@@ -22,10 +23,7 @@ Lexer::Lexer(std::string text) {
   }
 }
 
-bool Lexer::isNumber(char character) {
-  if (character >= '0' && character <= '9') return true;
-  return false;
-}
+std::vector<struct Token> Lexer::getTokens() { return this->tokens; }
 
 void Lexer::nextCharacter() {
   if (this->posistion >= text.length())
@@ -33,9 +31,15 @@ void Lexer::nextCharacter() {
   else
     this->current = this->text[++this->posistion];
 }
+
 void Lexer::backCharacter() { this->current = this->text[--this->posistion]; }
 
-Token Lexer::nextToken() {
+bool Lexer::isNumber(char character) {
+  if (character >= '0' && character <= '9') return true;
+  return false;
+}
+
+struct Token Lexer::nextToken() {
   switch (this->current) {
     case '\0':
       return Token(TokenType::eof);
@@ -78,7 +82,7 @@ Token Lexer::nextToken() {
     case '`':
     case '\'': {
       char myQuote = this->current;
-      Token token = Token();
+      struct Token token = Token();
       token.type = TokenType::string;
       token.start = this->posistion + 1;
 
@@ -93,7 +97,7 @@ Token Lexer::nextToken() {
   }
 
   if (isNumber(this->current)) {
-    Token token = Token();
+    struct Token token = Token();
     token.type = TokenType::number;
     token.start = this->posistion;
 
@@ -111,7 +115,7 @@ Token Lexer::nextToken() {
 }
 
 void Lexer::printTokens() {
-  for (Token token : this->tokens) {
+  for (struct Token token : this->tokens) {
     if (token.type == TokenType::number)
       std::cout << "Token: number literal";
     else if (token.type == TokenType::string)
