@@ -14,87 +14,97 @@ Lexer::Lexer(std::string text) {
 
   while (this->current != '\0') {
     Token token = nextToken();
-    if (token.type != TokenType::skip)
-      tokens.emplace_back(token);
-    nextCharacter();
+    if (token.type != TokenType::eof)
+      break;
+    else if (token.type != TokenType::skip)
+      this->tokens.emplace_back(token);
+    this->nextCharacter();
   }
 }
 
 bool Lexer::isNumber(char character) {
-  if (current >= '0' && current <= '9')
-    return true;
+  if (character >= '0' && character <= '9') return true;
   return false;
 }
 
 void Lexer::nextCharacter() {
-  if (this->posistion <= text.length())
-    this->current = this->text[this->posistion++];
-  else
+  if (this->posistion >= text.length())
     this->current = '\0';
+  else
+    this->current = this->text[++this->posistion];
 }
 void Lexer::backCharacter() { this->current = this->text[--this->posistion]; }
 
 Token Lexer::nextToken() {
   switch (this->current) {
-  case ' ':
-    return Token(TokenType::skip);
-    break;
+    case '\0':
+      return Token(TokenType::eof);
 
-  case '\n':
-    return Token(TokenType::skip);
-    break;
+    case ' ':
+      return Token(TokenType::skip);
 
-  case '\t':
-    return Token(TokenType::skip);
-    break;
+    case '\n':
+      return Token(TokenType::skip);
 
-  case '+':
-    return Token(TokenType::plus, "+", this->posistion - 1);
-    break;
+    case '\t':
+      return Token(TokenType::skip);
 
-  case '-':
-    return Token(TokenType::minus, "-", this->posistion - 1);
-    break;
+    case '+':
+      return Token(TokenType::plus, "+", this->posistion);
 
-  case '=':
-    return Token(TokenType::equal, "=", this->posistion - 1);
-    break;
+    case '-':
+      return Token(TokenType::minus, "-", this->posistion);
 
-  case '*':
-    return Token(TokenType::asterisk, "*", this->posistion - 1);
-    break;
+    case '=':
+      return Token(TokenType::equal, "=", this->posistion);
 
-  case '/':
-    return Token(TokenType::minus, "/", this->posistion - 1);
-    break;
+    case '*':
+      return Token(TokenType::asterisk, "*", this->posistion);
 
-  case '\\':
-    return Token(TokenType::minus, "\\", this->posistion - 1);
-    break;
+    case '/':
+      return Token(TokenType::minus, "/", this->posistion);
 
-  case '(':
-    return Token(TokenType::right_parenthesis, "(", this->posistion - 1);
-    break;
+    case '\\':
+      return Token(TokenType::minus, "\\", this->posistion);
+      break;
 
-  case ')':
-    return Token(TokenType::left_parenthesis, ")", this->posistion - 1);
-    break;
+    case '(':
+      return Token(TokenType::right_parenthesis, "(", this->posistion);
 
-  default:
-    if (isNumber(this->current)) {
+    case ')':
+      return Token(TokenType::left_parenthesis, ")", this->posistion);
+
+    case '"':
+    case '`':
+    case '\'': {
+      char myQuote = this->current;
       Token token = Token();
-      token.type = TokenType::number;
-      token.start = (!this->posistion) ? this->posistion : this->posistion - 1;
+      token.type = TokenType::string;
+      token.start = this->posistion + 1;
 
       do {
-        nextCharacter();
-      } while (isNumber(this->current));
-      backCharacter();
+        this->nextCharacter();
+      } while (this->current != myQuote);
 
       token.end = this->posistion - 1;
-      token.value = text.substr(token.start, token.end + 1);
+      token.value = this->text.substr(token.start, token.end);
       return token;
     }
+  }
+
+  if (isNumber(this->current)) {
+    Token token = Token();
+    token.type = TokenType::number;
+    token.start = this->posistion;
+
+    do {
+      this->nextCharacter();
+    } while (this->isNumber(this->current));
+    this->backCharacter();
+
+    token.end = this->posistion;
+    token.value = this->text.substr(token.start, token.end + 1);
+    return token;
   }
 
   return Token();
@@ -121,4 +131,4 @@ void Lexer::printTokens() {
               << token.end << std::endl;
   }
 }
-} // namespace HashLang
+}  // namespace HashLang

@@ -4,9 +4,6 @@
 
 namespace HashLang {
 enum class TokenType {
-  unkown,
-  skip,
-
   keyword,
 
   number,
@@ -20,6 +17,10 @@ enum class TokenType {
   backward_slash,
   left_parenthesis,
   right_parenthesis,
+
+  unkown,
+  skip,
+  eof,
 };
 
 struct Token {
