@@ -14,11 +14,10 @@ auto main(int argc, char *argv[]) -> int {
     std::getline(std::cin, line);
     if (line != "\0") {
       // std::cout << line << std::endl;
-      lexer lex = lexer(line);
-      lex.printTokens();
-      // parser par = parser(line);
-      // auto node = par.getNodes();
-      // par.printTree(node);
+      // lexer lex = lexer(line);
+      // lex.printTokens();
+      parser par = parser(line);
+      par.printTree(par.getNodes(), "", true);
     } else {
       std::cerr << "Input invalid\n";
     }

@@ -32,8 +32,6 @@ void Lexer::nextCharacter() {
     this->current = this->text[++this->posistion];
 }
 
-void Lexer::backCharacter() { this->current = this->text[--this->posistion]; }
-
 bool Lexer::isNumber(char character) {
   if (character >= '0' && character <= '9') return true;
   return false;
@@ -103,8 +101,7 @@ struct Token Lexer::nextToken() {
 
     do {
       this->nextCharacter();
-    } while (this->isNumber(this->current));
-    this->backCharacter();
+    } while (this->isNumber(this->text[this->posistion + 1]));
 
     token.end = this->posistion;
     token.value = this->text.substr(token.start, token.end + 1);

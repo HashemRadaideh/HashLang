@@ -18,7 +18,6 @@ class Lexer {
  protected:
   struct Token nextToken();
   void nextCharacter();
-  void backCharacter();
   bool isNumber(char);
 
  private:
