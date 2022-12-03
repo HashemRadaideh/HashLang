@@ -20,6 +20,6 @@ class Lexer {
  private:
   std::string text;
   char current;
-  int posistion;
+  int position;
 };
 }  // namespace HashLang

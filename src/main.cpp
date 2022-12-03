@@ -35,14 +35,19 @@ void printTokens(std::vector<token> tokens) {
   }
 }
 
-void printTree(node nod, std::string indent = "", bool isLast = true) {
+void printTree(node *node, std::string indent = "", bool isLast = true) {
+  if (node == nullptr) return;
+
   std::string branch = isLast ? "└──" : "├──";
-  std::cout << indent << branch << tokenInfo(nod.data.type) << std::endl;
+  std::cout << indent << branch << tokenInfo(node->data.type) << " "
+            << node->data.value << std::endl;
+  indent += isLast ? "   " : "│  ";
 
-  indent += isLast ? "   " : "│   ";
+  bool isLastChild = node->right == nullptr && node->left == nullptr;
+  printTree(node->left, indent, isLastChild);
 
-  bool isLastChild = false;
-  printTree(nod, indent, isLastChild);
+  isLastChild = node->right == nullptr && node->left == nullptr;
+  printTree(node->right, indent, isLastChild);
 }
 
 auto main(int argc, char *argv[]) -> int {
@@ -52,8 +57,10 @@ auto main(int argc, char *argv[]) -> int {
     std::getline(std::cin, line);
     if (line != "\0") {
       parser par = parser(line);
-      printTokens(par.getTokens());
-      // printTree(par.getNode());
+      // printTokens(par.getTokens());
+      node n = par.getNode();
+      node *nod = &n;
+      printTree(nod);
     } else {
       std::cerr << "Input invalid\n";
     }
