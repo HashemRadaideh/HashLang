@@ -57,7 +57,7 @@ auto main(int argc, char *argv[]) -> int {
     std::getline(std::cin, line);
     if (line != "\0") {
       parser par = parser(line);
-      // printTokens(par.getTokens());
+      printTokens(par.getTokens());
       node n = par.getNode();
       node *nod = &n;
       printTree(nod);

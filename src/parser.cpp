@@ -15,47 +15,37 @@ Parser::Parser(std::string line) {
 
   struct Token token;
   do {
-    token = lexer.nextToken();
+    token = lexer.getToken();
     if (token.type != TokenType::skip && token.type != TokenType::eof)
       this->tokens.emplace_back(token);
-    lexer.nextCharacter();
+    lexer.next();
   } while (token.type != TokenType::eof);
 
+  this->position = 0;
   this->current = this->tokens[this->position++];
-  parse();
+  this->baseNode = parse();
 }
 
 struct Node Parser::getNode() { return this->baseNode; }
 
 std::vector<struct Token> Parser::getTokens() { return this->tokens; }
 
-struct Token Parser::next() { return this->tokens[++this->position]; }
-
-struct Token Parser::match(enum TokenType type) {
-  if (this->current.type == type) return next();
-  return Token(type, nullptr, this->position);
-}
-
-Token Parser::peek(int offset) {
-  int index = offset + this->position;
-  if (index >= this->tokens.size()) return this->tokens[this->position - 1];
-  return this->tokens[index];
-}
-
-struct Node* Parser::parseTerm() {
-  Node* node = new Node();
-  node->data = match(TokenType::number);
-  return node;
-}
+void Parser::next() { this->current = this->tokens[this->position++]; }
 
 struct Node Parser::parse() {
   struct Node bin = Node();
 
-  bin.left = parseTerm();
-  while (current.type == TokenType::plus || current.type == TokenType::minus) {
-    bin.data = next();
-    bin.right = parseTerm();
-  }
+  bin.left = new Node();
+  bin.left->data = this->current;
+
+  next();
+
+  bin.data = this->current;
+
+  next();
+
+  bin.right = new Node();
+  bin.right->data = this->current;
 
   return bin;
 }

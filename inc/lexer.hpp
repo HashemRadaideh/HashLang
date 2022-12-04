@@ -11,8 +11,8 @@ class Lexer {
  public:
   Lexer(std::string);
   ~Lexer() = default;
-  struct Token nextToken();
-  void nextCharacter();
+  struct Token getToken();
+  void next();
 
  protected:
   bool isNumber(char);

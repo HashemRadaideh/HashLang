@@ -14,13 +14,8 @@ class Parser {
   ~Parser() = default;
   struct Node getNode();
   std::vector<struct Token> getTokens();
-  struct Token next();
-  struct Token match(enum TokenType);
+  void next();
   struct Node parse();
-  struct Node* parseTerm();
-
- protected:
-  struct Token peek(int);
 
  private:
   std::vector<struct Token> tokens;

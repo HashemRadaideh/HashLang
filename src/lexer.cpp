@@ -10,17 +10,17 @@ namespace HashLang {
 Lexer::Lexer(std::string text) {
   this->text = text;
   this->position = 0;
-  this->current = this->text[this->position];
+  this->current = this->text[this->position++];
 }
 
-void Lexer::nextCharacter() {
+void Lexer::next() {
   if (this->position >= text.length())
     this->current = '\0';
   else
-    this->current = this->text[++this->position];
+    this->current = this->text[this->position++];
 }
 
-struct Token Lexer::nextToken() {
+struct Token Lexer::getToken() {
   switch (this->current) {
     case '\0':
       return Token(TokenType::eof);
@@ -35,29 +35,29 @@ struct Token Lexer::nextToken() {
       return Token(TokenType::skip);
 
     case '+':
-      return Token(TokenType::plus, "+", this->position);
+      return Token(TokenType::plus, "+", this->position - 1);
 
     case '-':
-      return Token(TokenType::minus, "-", this->position);
+      return Token(TokenType::minus, "-", this->position - 1);
 
     case '=':
-      return Token(TokenType::equal, "=", this->position);
+      return Token(TokenType::equal, "=", this->position - 1);
 
     case '*':
-      return Token(TokenType::asterisk, "*", this->position);
+      return Token(TokenType::asterisk, "*", this->position - 1);
 
     case '/':
-      return Token(TokenType::minus, "/", this->position);
+      return Token(TokenType::minus, "/", this->position - 1);
 
     case '\\':
-      return Token(TokenType::minus, "\\", this->position);
+      return Token(TokenType::minus, "\\", this->position - 1);
       break;
 
     case '(':
-      return Token(TokenType::right_parenthesis, "(", this->position);
+      return Token(TokenType::right_parenthesis, "(", this->position - 1);
 
     case ')':
-      return Token(TokenType::left_parenthesis, ")", this->position);
+      return Token(TokenType::left_parenthesis, ")", this->position - 1);
 
     case '"':
     case '`':
@@ -68,7 +68,7 @@ struct Token Lexer::nextToken() {
       token.start = this->position + 1;
 
       do {
-        this->nextCharacter();
+        this->next();
       } while (this->current != myQuote);
 
       token.end = this->position - 1;
@@ -80,13 +80,13 @@ struct Token Lexer::nextToken() {
   if (isNumber(this->current)) {
     struct Token token = Token();
     token.type = TokenType::number;
-    token.start = this->position;
+    token.start = this->position - 1;
 
-    do {
-      this->nextCharacter();
-    } while (this->isNumber(this->text[this->position + 1]));
+    while (isNumber(this->text[this->position + 1])) {
+      this->next();
+    }
 
-    token.end = this->position;
+    token.end = this->position - 1;
     token.value = this->text.substr(token.start, token.end + 1);
     return token;
   }
@@ -95,7 +95,6 @@ struct Token Lexer::nextToken() {
 }
 
 bool Lexer::isNumber(char character) {
-  if (character >= '0' && character <= '9') return true;
-  return false;
+  return (character >= '0' && character <= '9');
 }
 }  // namespace HashLang
