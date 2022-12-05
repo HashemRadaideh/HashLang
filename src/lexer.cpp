@@ -68,7 +68,7 @@ struct Token Lexer::getToken() {
       token.start = this->position + 1;
 
       do {
-        this->next();
+        next();
       } while (this->current != myQuote);
 
       token.end = this->position - 1;
@@ -83,7 +83,7 @@ struct Token Lexer::getToken() {
     token.start = this->position - 1;
 
     while (isNumber(this->text[this->position + 1])) {
-      this->next();
+      next();
     }
 
     token.end = this->position - 1;

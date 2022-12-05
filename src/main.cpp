@@ -35,19 +35,18 @@ void printTokens(std::vector<token> tokens) {
   }
 }
 
-void printTree(node *node, std::string indent = "", bool isLast = true) {
+void printTree(node *node, bool isLast = true, std::string indent = "",
+               std::string branch = "") {
   if (node == nullptr) return;
 
-  std::string branch = isLast ? "└──" : "├──";
-  std::cout << indent << branch << tokenInfo(node->data.type) << " "
-            << node->data.value << std::endl;
-  indent += isLast ? "   " : "│  ";
+  branch = branch != "" ? isLast ? "└──" : "├──" : "";
+  std::cout << indent << branch << node->data.value << " ("
+            << tokenInfo(node->data.type) << ")\n";
+  indent += branch != "" ? isLast ? "   " : "│  " : "";
+  branch = isLast ? "└──" : "├──";
 
-  bool isLastChild = node->right == nullptr && node->left == nullptr;
-  printTree(node->left, indent, isLastChild);
-
-  isLastChild = node->right == nullptr && node->left == nullptr;
-  printTree(node->right, indent, isLastChild);
+  printTree(node->left, node->right == nullptr, indent, branch);
+  printTree(node->right, true, indent, branch);
 }
 
 auto main(int argc, char *argv[]) -> int {
@@ -57,7 +56,7 @@ auto main(int argc, char *argv[]) -> int {
     std::getline(std::cin, line);
     if (line != "\0") {
       parser par = parser(line);
-      printTokens(par.getTokens());
+      // printTokens(par.getTokens());
       node n = par.getNode();
       node *nod = &n;
       printTree(nod);
