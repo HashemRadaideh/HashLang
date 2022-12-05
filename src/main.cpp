@@ -58,8 +58,8 @@ auto main(int argc, char *argv[]) -> int {
       parser par = parser(line);
       // printTokens(par.getTokens());
       node n = par.getNode();
-      node *nod = &n;
-      printTree(nod);
+      node *node = &n;
+      printTree(node);
     } else {
       std::cerr << "Input invalid\n";
     }

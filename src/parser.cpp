@@ -33,20 +33,36 @@ std::vector<struct Token> Parser::getTokens() { return this->tokens; }
 void Parser::next() { this->current = this->tokens[this->position++]; }
 
 struct Node Parser::parse() {
-  struct Node bin = Node();
+  struct Node root = Node();
 
-  bin.left = new Node();
-  bin.left->data = this->current;
+  root.left = parseTerm();
+  while (current.type == TokenType::plus || current.type == TokenType::minus) {
+    root.data = this->current;
+    next();
+    root.right = parseTerm();
 
+    if (current.type == TokenType::plus || current.type == TokenType::minus) {
+      struct Node* bin = new Node();
+      bin->data = root.data;
+      bin->left = root.left;
+      bin->right = root.right;
+      root.left = bin;
+    }
+  }
+
+  return root;
+}  // namespace HashLang
+
+struct Node* Parser::parseTerm() {
+  if (this->current.type != TokenType::number) {
+    return new Node();
+  }
+
+  auto node = new Node();
+  node->data = this->current;
   next();
 
-  bin.data = this->current;
-
-  next();
-
-  bin.right = new Node();
-  bin.right->data = this->current;
-
-  return bin;
+  return node;
 }
+
 }  // namespace HashLang

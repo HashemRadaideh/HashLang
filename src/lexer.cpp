@@ -79,15 +79,17 @@ struct Token Lexer::getToken() {
 
   if (isNumber(this->current)) {
     struct Token token = Token();
+
     token.type = TokenType::number;
+    token.value = this->current;
+
     token.start = this->position - 1;
-
-    while (isNumber(this->text[this->position + 1])) {
+    while (isNumber(this->text[this->position])) {
       next();
+      token.value += this->current;
     }
-
     token.end = this->position - 1;
-    token.value = this->text.substr(token.start, token.end + 1);
+
     return token;
   }
 

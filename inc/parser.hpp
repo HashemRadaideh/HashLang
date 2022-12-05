@@ -16,6 +16,7 @@ class Parser {
   std::vector<struct Token> getTokens();
   void next();
   struct Node parse();
+  struct Node* parseTerm();
 
  private:
   std::vector<struct Token> tokens;
