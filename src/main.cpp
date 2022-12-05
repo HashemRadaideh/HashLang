@@ -1,11 +1,13 @@
 #include <iostream>
 #include <string>
 
+#include "evaluator.hpp"
 #include "lexer.hpp"
 #include "node.hpp"
 #include "parser.hpp"
 #include "token.hpp"
 
+using evaluator = class HashLang::Evaluator;
 using lexer = class HashLang::Lexer;
 using node = struct HashLang::Node;
 using parser = class HashLang::Parser;
@@ -60,6 +62,8 @@ auto main(int argc, char *argv[]) -> int {
       node n = par.getNode();
       node *node = &n;
       printTree(node);
+      evaluator eval = evaluator();
+      std::cout << eval.eval(node) << std::endl;
     } else {
       std::cerr << "Input invalid\n";
     }

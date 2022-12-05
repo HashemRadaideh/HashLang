@@ -51,7 +51,7 @@ struct Node Parser::parse() {
   }
 
   return root;
-}  // namespace HashLang
+}
 
 struct Node* Parser::parseTerm() {
   if (this->current.type != TokenType::number) {
