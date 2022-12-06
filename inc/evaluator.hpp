@@ -6,6 +6,7 @@ namespace HashLang {
 class Evaluator {
  public:
   Evaluator() = default;
-  int eval(struct Node*);
+  ~Evaluator() = default;
+  int evaluate(struct Node*);
 };
 }  // namespace HashLang

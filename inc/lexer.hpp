@@ -9,7 +9,7 @@
 namespace HashLang {
 class Lexer {
  public:
-  Lexer(std::string);
+  Lexer(std::string&);
   ~Lexer() = default;
   struct Token getToken();
   void next();

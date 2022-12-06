@@ -6,9 +6,10 @@
 #include "lexer.hpp"
 #include "node.hpp"
 #include "token.hpp"
+#include "types.hpp"
 
 namespace HashLang {
-Parser::Parser(std::string line) {
+Parser::Parser(std::string& line) {
   this->tokens = std::vector<struct Token>();
 
   class Lexer lexer = Lexer(line);
@@ -16,37 +17,41 @@ Parser::Parser(std::string line) {
   struct Token token;
   do {
     token = lexer.getToken();
-    if (token.type != TokenType::skip && token.type != TokenType::eof)
+    if (token.type != Types::skip && token.type != Types::eof)
       this->tokens.emplace_back(token);
     lexer.next();
-  } while (token.type != TokenType::eof);
+  } while (token.type != Types::eof);
 
   this->position = 0;
   this->current = this->tokens[this->position++];
-  this->baseNode = parse();
+  this->root = parse();
 }
 
-struct Node Parser::getNode() { return this->baseNode; }
+struct Node* Parser::getExpression() { return this->root; }
 
 std::vector<struct Token> Parser::getTokens() { return this->tokens; }
 
 void Parser::next() { this->current = this->tokens[this->position++]; }
 
-struct Node Parser::parse() {
-  struct Node root = Node();
+struct Node* Parser::parse() {
+  struct Node* root = new Node();
 
-  root.left = parseTerm();
-  while (current.type == TokenType::plus || current.type == TokenType::minus) {
-    root.data = this->current;
+  root->left = parseTerm();
+  while (current.type == Types::forward_slash ||
+         current.type == Types::asterisk || current.type == Types::plus ||
+         current.type == Types::minus) {
+    root->data = this->current;
     next();
-    root.right = parseTerm();
+    root->right = parseTerm();
 
-    if (current.type == TokenType::plus || current.type == TokenType::minus) {
+    if (current.type == Types::forward_slash ||
+        current.type == Types::asterisk || current.type == Types::plus ||
+        current.type == Types::minus) {
       struct Node* bin = new Node();
-      bin->data = root.data;
-      bin->left = root.left;
-      bin->right = root.right;
-      root.left = bin;
+      bin->data = root->data;
+      bin->left = root->left;
+      bin->right = root->right;
+      root->left = bin;
     }
   }
 
@@ -54,7 +59,7 @@ struct Node Parser::parse() {
 }
 
 struct Node* Parser::parseTerm() {
-  if (this->current.type != TokenType::number) {
+  if (this->current.type != Types::number) {
     return new Node();
   }
 
@@ -64,5 +69,4 @@ struct Node* Parser::parseTerm() {
 
   return node;
 }
-
 }  // namespace HashLang

@@ -10,18 +10,18 @@
 namespace HashLang {
 class Parser {
  public:
-  Parser(std::string);
+  Parser(std::string&);
   ~Parser() = default;
-  struct Node getNode();
+  struct Node* getExpression();
   std::vector<struct Token> getTokens();
   void next();
-  struct Node parse();
+  struct Node* parse();
   struct Node* parseTerm();
 
  private:
+  struct Node* root;
   std::vector<struct Token> tokens;
   struct Token current;
   int position;
-  struct Node baseNode;
 };
 }  // namespace HashLang

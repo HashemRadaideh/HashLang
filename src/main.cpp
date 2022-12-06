@@ -1,3 +1,6 @@
+#include <string.h>
+
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -12,20 +15,23 @@ using lexer = class HashLang::Lexer;
 using node = struct HashLang::Node;
 using parser = class HashLang::Parser;
 using token = struct HashLang::Token;
-using tokenType = enum HashLang::TokenType;
+using types = enum HashLang::Types;
+
+static bool showTree = false;
+static bool showTokens = false;
 
 std::string tokenInfo(token tok) {
-  if (tok.type == tokenType::number)
+  if (tok.type == types::number)
     return "number literal";
-  else if (tok.type == tokenType::string)
+  else if (tok.type == types::string)
     return "string literal";
-  else if (tok.type == tokenType::plus)
+  else if (tok.type == types::plus)
     return "plus sign";
-  else if (tok.type == tokenType::minus)
+  else if (tok.type == types::minus)
     return "minus sign";
-  else if (tok.type == tokenType::asterisk)
+  else if (tok.type == types::asterisk)
     return "asterisk";
-  else if (tok.type == tokenType::forward_slash)
+  else if (tok.type == types::forward_slash)
     return "forward slash";
   return "Unkown token type";
 }
@@ -51,22 +57,68 @@ void printTree(node *node, bool isLast = true, std::string indent = "",
   printTree(node->right, true, indent, branch);
 }
 
-auto main(int argc, char *argv[]) -> int {
+void interpret(std::string line) {
+  if (line == "exit()") {
+    exit(0);
+  } else if (line == "\0") {
+    std::cerr << "Input invalid\n";
+    return;
+  } else if (line == "tree()") {
+    showTree = !showTree;
+    return;
+  } else if (line == "tokens()") {
+    showTokens = !showTokens;
+    return;
+  }
+
+  parser par = parser(line);
+
+  if (showTokens) printTokens(par.getTokens());
+  if (showTree) printTree(par.getExpression());
+
+  evaluator eval = evaluator();
+  std::cout << eval.evaluate(par.getExpression()) << std::endl;
+}
+
+bool interactive() {
   while (true) {
     std::cout << "-> ";
     std::string line = "";
     std::getline(std::cin, line);
-    if (line != "\0") {
-      parser par = parser(line);
-      // printTokens(par.getTokens());
-      node n = par.getNode();
-      node *node = &n;
-      printTree(node);
-      evaluator eval = evaluator();
-      std::cout << eval.eval(node) << std::endl;
-    } else {
-      std::cerr << "Input invalid\n";
-    }
+    interpret(line);
   }
+  return 1;
+}
+
+bool help(int status) {
+  std::cout << R"(Usage: hashlang <flag> <file_name>
+no options will launch interactive shell mode)"
+            << std::endl;
+  return status;
+}
+
+bool read_file(char *file_name) {
+  std::fstream file = std::fstream(file_name);
+
+  if (file.fail()) {
+    std::cerr << "File not found\n";
+    return 1;
+  }
+
+  std::cout << "file is being read\n";
+  std::string line = "";
+  while (std::getline(file, line)) interpret(line);
+
+  return 0;
+}
+
+auto main(int argc, char *argv[]) -> int {
+  if (argc < 2) return interactive();
+  for (int i = 1; i <= argc; i++)
+    if (strcmp(argv[i], "--help") || strcmp(argv[i], "-h"))
+      return help(0);
+    else
+      return read_file(argv[i]);
+
   return 0;
 }
