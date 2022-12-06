@@ -14,7 +14,13 @@ Number::~Number() {}
 BinaryExpression::BinaryExpression() { this->type = Types::binary; }
 
 BinaryExpression::~BinaryExpression() {
-  delete left;
-  delete right;
+  delete this->left;
+  delete this->right;
 }
+
+ParenthesisedExpression::ParenthesisedExpression() {
+  this->type = Types::parenthesised;
+}
+
+ParenthesisedExpression::~ParenthesisedExpression() { delete this->expression; }
 }  // namespace HashLang

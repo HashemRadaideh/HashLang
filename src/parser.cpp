@@ -42,7 +42,7 @@ class Expression* Parser::parseTerm() {
 
     class BinaryExpression* bin = new BinaryExpression();
     bin->left = left;
-    bin->op = op;
+    bin->value = op;
     bin->right = right;
     left = bin;
   }
@@ -60,7 +60,7 @@ class Expression* Parser::parseFactor() {
 
     class BinaryExpression* bin = new BinaryExpression();
     bin->left = left;
-    bin->op = op;
+    bin->value = op;
     bin->right = right;
     left = bin;
   }
@@ -71,8 +71,23 @@ class Expression* Parser::parseFactor() {
 class Expression* Parser::parseCurrent() {
   if (match(Types::number)) {
     class Number* node = new Number();
-    node->number = this->current;
+    node->value = this->current;
     this->current = next();
+    return node;
+  }
+
+  if (match(Types::open_parenthesis)) {
+    class ParenthesisedExpression* node = new ParenthesisedExpression();
+
+    node->value = this->current;
+    this->current = next();
+
+    auto parsed = parseTerm();
+    node->expression = (BinaryExpression*)parsed;
+
+    node->close = this->current;
+    this->current = next();
+
     return node;
   }
 

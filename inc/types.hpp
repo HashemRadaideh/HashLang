@@ -16,6 +16,8 @@ enum class Types {
   open_parenthesis,
   close_parenthesis,
 
+  parenthesised,
+
   unary,
   binary,
   ternary,

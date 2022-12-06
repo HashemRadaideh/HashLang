@@ -11,7 +11,7 @@
 #include "token.hpp"
 
 static bool showTokens = false;
-static bool showTree = false;
+static bool showTree = true;
 
 void interpret(std::string line) {
   if (line == "exit()") {
@@ -30,7 +30,7 @@ void interpret(std::string line) {
   HashLang::Evaluator evaluator = line;
 
   // if (showTokens) evaluator.printTokens();
-  // if (showTree) evaluator.printTree();
+  if (showTree) evaluator.printTree();
 
   std::cout << evaluator.evaluation() << std::endl;
 }

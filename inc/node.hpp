@@ -9,6 +9,7 @@ class Expression {
   Expression();
   ~Expression();
 
+  struct Token value;
   enum Types type;
 };
 
@@ -16,8 +17,6 @@ class Number : public Expression {
  public:
   Number();
   ~Number();
-
-  struct Token number;
 };
 
 class BinaryExpression : public Expression {
@@ -26,7 +25,16 @@ class BinaryExpression : public Expression {
   ~BinaryExpression();
 
   class Expression *left;
-  struct Token op;
   class Expression *right;
+};
+
+class ParenthesisedExpression : public Expression {
+ public:
+  ParenthesisedExpression();
+  ~ParenthesisedExpression();
+
+  // struct Token open;
+  class BinaryExpression *expression;
+  struct Token close;
 };
 }  // namespace HashLang
