@@ -17,10 +17,10 @@ Parser::Parser(std::string& line) {
   struct Token token;
   do {
     token = lexer.getToken();
-    if (token.type != Types::skip && token.type != Types::eof)
+    if (token.type != TokenType::skip && token.type != TokenType::eof)
       this->tokens.emplace_back(token);
     lexer.next();
-  } while (token.type != Types::eof);
+  } while (token.type != TokenType::eof);
 
   this->position = 0;
   this->current = this->tokens[this->position++];
@@ -38,7 +38,7 @@ struct Node* Parser::parse() { return parseTerm(); }
 struct Node* Parser::parseTerm() {
   struct Node* left = parseFactor();
 
-  while (current.type == Types::plus || current.type == Types::minus) {
+  while (current.type == TokenType::plus || current.type == TokenType::minus) {
     struct Token op = this->current;
     next();
     struct Node* right = parseFactor();
@@ -56,7 +56,8 @@ struct Node* Parser::parseTerm() {
 struct Node* Parser::parseFactor() {
   struct Node* left = parseCurrent();
 
-  while (current.type == Types::slash || current.type == Types::asterisk) {
+  while (current.type == TokenType::slash ||
+         current.type == TokenType::asterisk) {
     struct Token op = this->current;
     next();
     struct Node* right = parseCurrent();
@@ -72,14 +73,13 @@ struct Node* Parser::parseFactor() {
 }
 
 struct Node* Parser::parseCurrent() {
-  if (this->current.type != Types::number) {
-    return new Node();
+  if (this->current.type == TokenType::number) {
+    struct Node* node = new Node();
+    node->data = this->current;
+    next();
+    return node;
   }
 
-  auto node = new Node();
-  node->data = this->current;
-  next();
-
-  return node;
+  return new Node();
 }
 }  // namespace HashLang

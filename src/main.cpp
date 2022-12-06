@@ -15,7 +15,7 @@ using lexer = class HashLang::Lexer;
 using node = struct HashLang::Node;
 using parser = class HashLang::Parser;
 using token = struct HashLang::Token;
-using types = enum HashLang::Types;
+using types = enum HashLang::TokenType;
 
 static bool showTokens = false;
 static bool showTree = false;

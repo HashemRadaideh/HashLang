@@ -1,8 +1,8 @@
 #pragma once
 
 namespace HashLang {
-enum class Types {
-  keyword,
+enum class TokenType {
+  identifier,
 
   number,
   string,
@@ -12,12 +12,19 @@ enum class Types {
   minus,
   asterisk,
   slash,
-  backward_slash,
-  left_parenthesis,
-  right_parenthesis,
+  back_slash,
+  open_parenthesis,
+  close_parenthesis,
 
   unkown,
   skip,
   eof,
+};
+
+enum class SyntaxType {
+  unary,
+  binary,
+  ternary,
+  statement,
 };
 }  // namespace HashLang

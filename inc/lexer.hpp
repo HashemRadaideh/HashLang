@@ -15,7 +15,9 @@ class Lexer {
   void next();
 
  protected:
+  char peek(int);
   bool isNumber(char);
+  bool isAlpha(char);
 
  private:
   std::string text;
