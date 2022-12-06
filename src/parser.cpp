@@ -33,32 +33,45 @@ std::vector<struct Token> Parser::getTokens() { return this->tokens; }
 
 void Parser::next() { this->current = this->tokens[this->position++]; }
 
-struct Node* Parser::parse() {
-  struct Node* root = new Node();
-
-  root->left = parseTerm();
-  while (current.type == Types::forward_slash ||
-         current.type == Types::asterisk || current.type == Types::plus ||
-         current.type == Types::minus) {
-    root->data = this->current;
-    next();
-    root->right = parseTerm();
-
-    if (current.type == Types::forward_slash ||
-        current.type == Types::asterisk || current.type == Types::plus ||
-        current.type == Types::minus) {
-      struct Node* bin = new Node();
-      bin->data = root->data;
-      bin->left = root->left;
-      bin->right = root->right;
-      root->left = bin;
-    }
-  }
-
-  return root;
-}
+struct Node* Parser::parse() { return parseTerm(); }
 
 struct Node* Parser::parseTerm() {
+  struct Node* left = parseFactor();
+
+  while (current.type == Types::plus || current.type == Types::minus) {
+    struct Token op = this->current;
+    next();
+    struct Node* right = parseFactor();
+
+    struct Node* bin = new Node();
+    bin->data = op;
+    bin->left = left;
+    bin->right = right;
+    left = bin;
+  }
+
+  return left;
+}
+
+struct Node* Parser::parseFactor() {
+  struct Node* left = parseCurrent();
+
+  while (current.type == Types::slash || current.type == Types::asterisk) {
+    struct Token op = this->current;
+    next();
+    struct Node* right = parseCurrent();
+
+    struct Node* bin = new Node();
+    bin->data = op;
+    bin->left = left;
+    bin->right = right;
+    left = bin;
+  }
+
+  return left;
+}
+
+struct Node* Parser::parseCurrent() {
   if (this->current.type != Types::number) {
     return new Node();
   }

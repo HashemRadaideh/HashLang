@@ -16,18 +16,20 @@ int Evaluator::evaluate(struct Node* root) {
   }
 
   if (root->data.type == Types::plus || root->data.type == Types::minus ||
-      root->data.type == Types::asterisk ||
-      root->data.type == Types::forward_slash) {
+      root->data.type == Types::asterisk || root->data.type == Types::slash) {
     int left = evaluate(root->left);
     int right = evaluate(root->right);
     char op = root->data.value[0];
     switch (op) {
       case '+':
         return left + right;
+
       case '-':
         return left - right;
+
       case '*':
         return left * right;
+
       case '/':
         return left / right;
     }

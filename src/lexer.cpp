@@ -65,15 +65,15 @@ struct Token Lexer::getToken() {
     case '\'': {
       char myQuote = this->current;
       struct Token token = Token();
-      token.type = Types::string;
-      token.start = this->position + 1;
 
+      token.type = Types::string;
+      token.start = this->position;
       do {
         next();
+        token.value += this->current != myQuote ? this->current : '\0';
       } while (this->current != myQuote);
-
       token.end = this->position - 1;
-      token.value = this->text.substr(token.start, token.end);
+
       return token;
     }
   }

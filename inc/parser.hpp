@@ -17,6 +17,8 @@ class Parser {
   void next();
   struct Node* parse();
   struct Node* parseTerm();
+  struct Node* parseFactor();
+  struct Node* parseCurrent();
 
  private:
   struct Node* root;

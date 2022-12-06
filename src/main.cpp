@@ -17,8 +17,8 @@ using parser = class HashLang::Parser;
 using token = struct HashLang::Token;
 using types = enum HashLang::Types;
 
-static bool showTree = false;
 static bool showTokens = false;
+static bool showTree = false;
 
 std::string tokenInfo(token tok) {
   if (tok.type == types::number)
@@ -31,7 +31,7 @@ std::string tokenInfo(token tok) {
     return "minus sign";
   else if (tok.type == types::asterisk)
     return "asterisk";
-  else if (tok.type == types::forward_slash)
+  else if (tok.type == types::slash)
     return "forward slash";
   return "Unkown token type";
 }

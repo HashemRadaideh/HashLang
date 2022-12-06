@@ -11,7 +11,7 @@ enum class Types {
   plus,
   minus,
   asterisk,
-  forward_slash,
+  slash,
   backward_slash,
   left_parenthesis,
   right_parenthesis,
