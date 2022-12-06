@@ -33,7 +33,7 @@ class ParenthesisedExpression : public Expression {
   ParenthesisedExpression();
   ~ParenthesisedExpression();
 
-  // struct Token open;
+  struct Token open;
   class BinaryExpression *expression;
   struct Token close;
 };

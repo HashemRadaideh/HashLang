@@ -1,6 +1,6 @@
 #pragma once
 
-#include "node.hpp"
+#include "ast.hpp"
 #include "parser.hpp"
 
 namespace HashLang {

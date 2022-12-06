@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "ast.hpp"
 #include "lexer.hpp"
-#include "node.hpp"
 #include "token.hpp"
 
 namespace HashLang {

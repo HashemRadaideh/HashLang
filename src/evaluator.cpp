@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-#include "node.hpp"
+#include "ast.hpp"
 #include "token.hpp"
 #include "types.hpp"
 
@@ -22,7 +22,7 @@ void Evaluator::printTokens() {
     if (node == nullptr) return;
 
     if (node->type == Types::binary) {
-      auto bin = (BinaryExpression*)node;
+      BinaryExpression* bin = (BinaryExpression*)node;
       print(bin->left);
     }
 
@@ -47,7 +47,7 @@ void Evaluator::printTree() {
 
     branch = branch != "" ? isLast ? "└──" : "├──" : "";
 
-    std::cout << indent << branch << "<" << tokenInfo(node->type) << "> ";
+    std::cout << indent << branch << "[" << tokenInfo(node->type) << "] ";
     if (node->type != Types::parenthesised) std::cout << node->value.value;
     std::cout << std::endl;
 
@@ -55,32 +55,29 @@ void Evaluator::printTree() {
     branch = isLast ? "└──" : "├──";
 
     if (node->type == Types::parenthesised) {
-      auto bin = ((ParenthesisedExpression*)node)->expression;
+      ParenthesisedExpression* paren = (ParenthesisedExpression*)node;
 
-      branch = branch != "" ? isLast ? "└──" : "├──" : "";
+      std::cout << indent << "├──"
+                << "[" << tokenInfo(paren->open.type) << "]  "
+                << paren->open.value << std::endl;
 
-      std::cout << indent << branch << "<" << tokenInfo(node->value.type)
-                << "> " << node->value.value << std::endl;
+      std::cout << indent << "├──"
+                << "[" << tokenInfo(paren->expression->type) << "] "
+                << paren->expression->value.value << std::endl;
 
-      std::cout << indent << branch << "<" << tokenInfo(bin->type) << "> ";
-      if (bin->type != Types::parenthesised) std::cout << bin->value.value;
-      std::cout << std::endl;
+      std::string str = indent + "│  ";
 
-      indent += branch != "" ? isLast ? "   " : "│  " : "";
-      branch = isLast ? "└──" : "├──";
+      print(paren->expression->left, paren->expression->right == nullptr, str,
+            branch);
+      print(paren->expression->right, true, str, branch);
 
-      print(bin->left, bin->right == nullptr, indent, branch);
-      print(bin->right, true, indent, branch);
-
-      auto paren = (ParenthesisedExpression*)node;
-      indent.resize(indent.size() - 5);
       std::cout << indent << "└──"
-                << "<" << tokenInfo(paren->close.type) << "> "
+                << "[" << tokenInfo(paren->close.type) << "] "
                 << paren->close.value << std::endl;
     }
 
     if (node->type == Types::binary) {
-      auto bin = (BinaryExpression*)node;
+      BinaryExpression* bin = (BinaryExpression*)node;
       print(bin->left, bin->right == nullptr, indent, branch);
       print(bin->right, true, indent, branch);
     }
@@ -97,7 +94,7 @@ int Evaluator::eval(class Expression* node) {
   }
 
   if (node->type == Types::binary) {
-    auto bin = (BinaryExpression*)node;
+    BinaryExpression* bin = (BinaryExpression*)node;
     if (bin->value.type == Types::plus || bin->value.type == Types::minus ||
         bin->value.type == Types::asterisk || bin->value.type == Types::slash) {
       int left = eval(bin->left);

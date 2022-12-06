@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
+#include "ast.hpp"
 #include "evaluator.hpp"
 #include "lexer.hpp"
-#include "node.hpp"
 #include "parser.hpp"
 #include "token.hpp"
 
@@ -29,7 +29,7 @@ void interpret(std::string line) {
 
   HashLang::Evaluator evaluator = line;
 
-  // if (showTokens) evaluator.printTokens();
+  if (showTokens) evaluator.printTokens();
   if (showTree) evaluator.printTree();
 
   std::cout << evaluator.evaluation() << std::endl;
