@@ -24,40 +24,40 @@ void Lexer::next() {
 struct Token Lexer::getToken() {
   switch (this->current) {
     case '\0':
-      return Token(TokenType::eof);
+      return Token(Types::eof);
 
     case ' ':
-      return Token(TokenType::skip);
+      return Token(Types::skip);
 
     case '\n':
-      return Token(TokenType::skip);
+      return Token(Types::skip);
 
     case '\t':
-      return Token(TokenType::skip);
+      return Token(Types::skip);
 
     case '+':
-      return Token(TokenType::plus, "+", this->position - 1);
+      return Token(Types::plus, "+", this->position - 1);
 
     case '-':
-      return Token(TokenType::minus, "-", this->position - 1);
+      return Token(Types::minus, "-", this->position - 1);
 
     case '=':
-      return Token(TokenType::equal, "=", this->position - 1);
+      return Token(Types::equal, "=", this->position - 1);
 
     case '*':
-      return Token(TokenType::asterisk, "*", this->position - 1);
+      return Token(Types::asterisk, "*", this->position - 1);
 
     case '/':
-      return Token(TokenType::slash, "/", this->position - 1);
+      return Token(Types::slash, "/", this->position - 1);
 
     case '\\':
-      return Token(TokenType::back_slash, "\\", this->position - 1);
+      return Token(Types::back_slash, "\\", this->position - 1);
 
     case '(':
-      return Token(TokenType::open_parenthesis, "(", this->position - 1);
+      return Token(Types::open_parenthesis, "(", this->position - 1);
 
     case ')':
-      return Token(TokenType::close_parenthesis, ")", this->position - 1);
+      return Token(Types::close_parenthesis, ")", this->position - 1);
 
     case '"':
     case '`':
@@ -65,7 +65,7 @@ struct Token Lexer::getToken() {
       char myQuote = this->current;
       struct Token token = Token();
 
-      token.type = TokenType::string;
+      token.type = Types::string;
       token.start = this->position;
       do {
         next();
@@ -80,7 +80,7 @@ struct Token Lexer::getToken() {
   if (isNumber(this->current)) {
     struct Token token = Token();
 
-    token.type = TokenType::number;
+    token.type = Types::number;
     token.value = this->current;
 
     token.start = this->position - 1;
@@ -94,7 +94,7 @@ struct Token Lexer::getToken() {
   } else if (isAlpha(this->current)) {
     struct Token token = Token();
 
-    token.type = TokenType::identifier;
+    token.type = Types::identifier;
     token.value = this->current;
 
     token.start = this->position - 1;

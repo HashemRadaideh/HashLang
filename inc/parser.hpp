@@ -13,17 +13,17 @@ class Parser {
   Parser(std::string&);
   Parser() = default;
   ~Parser();
-  struct Node* getExpression();
+  class Expression* getExpression();
   struct Token next();
-  bool match(enum TokenType);
-  struct Node* parse();
-  struct Node* parseTerm();
-  struct Node* parseFactor();
-  struct Node* parseCurrent();
+  bool match(enum Types);
+  class Expression* parse();
+  class Expression* parseTerm();
+  class Expression* parseFactor();
+  class Expression* parseCurrent();
 
  private:
   class Lexer lexer;
-  struct Node* root;
+  class Expression* root;
   struct Token current;
 };
 }  // namespace HashLang

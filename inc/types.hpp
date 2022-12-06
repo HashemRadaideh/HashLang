@@ -1,7 +1,7 @@
 #pragma once
 
 namespace HashLang {
-enum class TokenType {
+enum class Types {
   identifier,
 
   number,
@@ -16,15 +16,14 @@ enum class TokenType {
   open_parenthesis,
   close_parenthesis,
 
-  unkown,
-  skip,
-  eof,
-};
-
-enum class SyntaxType {
   unary,
   binary,
   ternary,
+
   statement,
+
+  unkown,
+  skip,
+  eof,
 };
 }  // namespace HashLang

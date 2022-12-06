@@ -1,17 +1,32 @@
 #pragma once
 
 #include "token.hpp"
+#include "types.hpp"
 
 namespace HashLang {
-struct Node {
-  struct Token data;
-  struct Node *left, *right;
-  Node() { left = right = nullptr; };
-  Node(struct Token data, struct Node *left, struct Node *right) {
-    data = data;
-    left = left;
-    right = right;
-  };
-  ~Node() = default;
+class Expression {
+ public:
+  Expression();
+  ~Expression();
+
+  enum Types type;
+};
+
+class Number : public Expression {
+ public:
+  Number();
+  ~Number();
+
+  struct Token number;
+};
+
+class BinaryExpression : public Expression {
+ public:
+  BinaryExpression();
+  ~BinaryExpression();
+
+  class Expression *left;
+  struct Token op;
+  class Expression *right;
 };
 }  // namespace HashLang

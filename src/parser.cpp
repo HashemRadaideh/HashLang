@@ -12,50 +12,37 @@
 namespace HashLang {
 Parser::Parser(std::string& line) : lexer(line) {
   this->current = next();
-  if (this->current.type != TokenType::eof) this->root = parse();
+  if (this->current.type != Types::eof) this->root = parse();
 }
 
-Parser::~Parser() {
-  std::function<void(struct Node*, std::function<void(struct Node*)>)> iterate =
-      [&](struct Node* node,
-          std::function<void(struct Node*)> function = nullptr) -> void {
-    if (node == nullptr) return;
+Parser::~Parser() { delete root; }
 
-    iterate(node->left, function);
-    iterate(node->right, function);
-
-    function(node);
-  };
-
-  iterate(this->root, [](struct Node* node) -> void { delete node; });
-}
-
-struct Node* Parser::getExpression() { return this->root; }
+class Expression* Parser::getExpression() { return this->root; }
 
 struct Token Parser::next() {
   struct Token token = lexer.getToken();
   lexer.next();
 
-  if (token.type == TokenType::skip) token = next();
+  if (token.type == Types::skip) token = next();
 
   return token;
 }
 
-struct Node* Parser::parse() { return parseTerm(); }
+class Expression* Parser::parse() { return parseTerm(); }
 
-bool Parser::match(enum TokenType type) { return this->current.type == type; }
+bool Parser::match(enum Types type) { return this->current.type == type; }
 
-struct Node* Parser::parseTerm() {
-  struct Node* left = parseFactor();
+class Expression* Parser::parseTerm() {
+  class Expression* left = parseFactor();
 
-  while (current.type == TokenType::plus || current.type == TokenType::minus) {
+  while (current.type == Types::plus || current.type == Types::minus) {
     struct Token op = this->current;
     this->current = next();
-    struct Node* right = parseFactor();
+    class Expression* right = parseFactor();
 
-    struct Node* bin = new Node();
-    bin->data = op;
+    class BinaryExpression* bin = new BinaryExpression();
     bin->left = left;
+    bin->op = op;
     bin->right = right;
     left = bin;
   }
@@ -63,18 +50,17 @@ struct Node* Parser::parseTerm() {
   return left;
 }
 
-struct Node* Parser::parseFactor() {
-  struct Node* left = parseCurrent();
+class Expression* Parser::parseFactor() {
+  class Expression* left = parseCurrent();
 
-  while (current.type == TokenType::slash ||
-         current.type == TokenType::asterisk) {
+  while (current.type == Types::slash || current.type == Types::asterisk) {
     struct Token op = this->current;
     this->current = next();
-    struct Node* right = parseCurrent();
+    class Expression* right = parseCurrent();
 
-    struct Node* bin = new Node();
-    bin->data = op;
+    class BinaryExpression* bin = new BinaryExpression();
     bin->left = left;
+    bin->op = op;
     bin->right = right;
     left = bin;
   }
@@ -82,14 +68,14 @@ struct Node* Parser::parseFactor() {
   return left;
 }
 
-struct Node* Parser::parseCurrent() {
-  if (match(TokenType::number)) {
-    struct Node* node = new Node();
-    node->data = this->current;
+class Expression* Parser::parseCurrent() {
+  if (match(Types::number)) {
+    class Number* node = new Number();
+    node->number = this->current;
     this->current = next();
     return node;
   }
 
-  return new Node();
+  return new Expression();
 }
 }  // namespace HashLang

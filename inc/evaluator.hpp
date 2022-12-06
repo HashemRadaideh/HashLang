@@ -14,10 +14,10 @@ class Evaluator {
 
  protected:
   std::string tokenInfo(struct Token);
-  int eval(struct Node*);
+  int eval(class Expression*);
 
  private:
   class Parser parser;
-  struct Node* root;
+  class Expression* root;
 };
 }  // namespace HashLang

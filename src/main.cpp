@@ -29,8 +29,8 @@ void interpret(std::string line) {
 
   HashLang::Evaluator evaluator = line;
 
-  if (showTokens) evaluator.printTokens();
-  if (showTree) evaluator.printTree();
+  // if (showTokens) evaluator.printTokens();
+  // if (showTree) evaluator.printTree();
 
   std::cout << evaluator.evaluation() << std::endl;
 }
