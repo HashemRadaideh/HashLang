@@ -11,10 +11,11 @@ namespace HashLang {
 class Parser {
  public:
   Parser(std::string&);
-  ~Parser() = default;
+  ~Parser();
   struct Node* getExpression();
   std::vector<struct Token> getTokens();
   void next();
+  bool match(enum TokenType);
   struct Node* parse();
   struct Node* parseTerm();
   struct Node* parseFactor();

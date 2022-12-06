@@ -1,5 +1,6 @@
 #include "parser.hpp"
 
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -27,6 +28,21 @@ Parser::Parser(std::string& line) {
   this->root = parse();
 }
 
+Parser::~Parser() {
+  std::function<void(struct Node*, std::function<void(struct Node*)>)> iterate =
+      [&](struct Node* node,
+          std::function<void(struct Node*)> function = nullptr) -> void {
+    if (node == nullptr) return;
+
+    iterate(node->left, function);
+    iterate(node->right, function);
+
+    function(node);
+  };
+
+  iterate(this->root, [](struct Node* node) -> void { delete node; });
+}
+
 struct Node* Parser::getExpression() { return this->root; }
 
 std::vector<struct Token> Parser::getTokens() { return this->tokens; }
@@ -34,6 +50,8 @@ std::vector<struct Token> Parser::getTokens() { return this->tokens; }
 void Parser::next() { this->current = this->tokens[this->position++]; }
 
 struct Node* Parser::parse() { return parseTerm(); }
+
+bool Parser::match(enum TokenType type) { return this->current.type == type; }
 
 struct Node* Parser::parseTerm() {
   struct Node* left = parseFactor();
@@ -73,7 +91,7 @@ struct Node* Parser::parseFactor() {
 }
 
 struct Node* Parser::parseCurrent() {
-  if (this->current.type == TokenType::number) {
+  if (match(TokenType::number)) {
     struct Node* node = new Node();
     node->data = this->current;
     next();
