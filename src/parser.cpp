@@ -10,22 +10,9 @@
 #include "types.hpp"
 
 namespace HashLang {
-Parser::Parser(std::string& line) {
-  this->tokens = std::vector<struct Token>();
-
-  class Lexer lexer = Lexer(line);
-
-  struct Token token;
-  do {
-    token = lexer.getToken();
-    if (token.type != TokenType::skip && token.type != TokenType::eof)
-      this->tokens.emplace_back(token);
-    lexer.next();
-  } while (token.type != TokenType::eof);
-
-  this->position = 0;
-  this->current = this->tokens[this->position++];
-  this->root = parse();
+Parser::Parser(std::string& line) : lexer(line) {
+  this->current = next();
+  if (this->current.type != TokenType::eof) this->root = parse();
 }
 
 Parser::~Parser() {
@@ -45,9 +32,14 @@ Parser::~Parser() {
 
 struct Node* Parser::getExpression() { return this->root; }
 
-std::vector<struct Token> Parser::getTokens() { return this->tokens; }
+struct Token Parser::next() {
+  struct Token token = lexer.getToken();
+  lexer.next();
 
-void Parser::next() { this->current = this->tokens[this->position++]; }
+  if (token.type == TokenType::skip) token = next();
+
+  return token;
+}
 
 struct Node* Parser::parse() { return parseTerm(); }
 
@@ -58,7 +50,7 @@ struct Node* Parser::parseTerm() {
 
   while (current.type == TokenType::plus || current.type == TokenType::minus) {
     struct Token op = this->current;
-    next();
+    this->current = next();
     struct Node* right = parseFactor();
 
     struct Node* bin = new Node();
@@ -77,7 +69,7 @@ struct Node* Parser::parseFactor() {
   while (current.type == TokenType::slash ||
          current.type == TokenType::asterisk) {
     struct Token op = this->current;
-    next();
+    this->current = next();
     struct Node* right = parseCurrent();
 
     struct Node* bin = new Node();
@@ -94,7 +86,7 @@ struct Node* Parser::parseCurrent() {
   if (match(TokenType::number)) {
     struct Node* node = new Node();
     node->data = this->current;
-    next();
+    this->current = next();
     return node;
   }
 

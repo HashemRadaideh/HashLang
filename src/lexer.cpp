@@ -98,7 +98,7 @@ struct Token Lexer::getToken() {
     token.value = this->current;
 
     token.start = this->position - 1;
-    while (isAlpha(peek(0)) || isNumber(peek(0)) || peek(0) == '_') {
+    while (isAlpha(peek(0)) || isNumber(peek(0))) {
       next();
       token.value += this->current;
     }
@@ -113,10 +113,11 @@ struct Token Lexer::getToken() {
 char Lexer::peek(int index = 0) { return this->text[this->position + index]; }
 
 bool Lexer::isNumber(char character) {
-  return (character >= '0' && character <= '9');
+  return character >= '0' && character <= '9';
 }
 
 bool Lexer::isAlpha(char character) {
-  return (character >= 'a' && character <= 'z');
+  return (character == '_') || (character >= 'A' && character <= 'Z') ||
+         (character >= 'a' && character <= 'z');
 }
 }  // namespace HashLang

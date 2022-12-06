@@ -1,2 +1,3 @@
 .cache
 bin
+.vscode/settings.json
