@@ -19,22 +19,30 @@ class Number : public Expression {
   ~Number();
 };
 
-class BinaryExpression : public Expression {
+class Unary : public Expression {
  public:
-  BinaryExpression();
-  ~BinaryExpression();
+  Unary();
+  ~Unary();
+
+  class Expression *expression;
+};
+
+class Binary : public Expression {
+ public:
+  Binary();
+  ~Binary();
 
   class Expression *left;
   class Expression *right;
 };
 
-class ParenthesisedExpression : public Expression {
+class Parenthesesed : public Expression {
  public:
-  ParenthesisedExpression();
-  ~ParenthesisedExpression();
+  Parenthesesed();
+  ~Parenthesesed();
 
   struct Token open;
-  class BinaryExpression *expression;
+  class Expression *expression;
   struct Token close;
 };
 }  // namespace HashLang

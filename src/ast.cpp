@@ -11,16 +11,18 @@ Number::Number() { this->type = Types::number; }
 
 Number::~Number() {}
 
-BinaryExpression::BinaryExpression() { this->type = Types::binary; }
+Binary::Binary() { this->type = Types::binary; }
 
-BinaryExpression::~BinaryExpression() {
+Binary::~Binary() {
   delete this->left;
   delete this->right;
 }
 
-ParenthesisedExpression::ParenthesisedExpression() {
-  this->type = Types::parenthesised;
-}
+Parenthesesed::Parenthesesed() { this->type = Types::parenthesised; }
 
-ParenthesisedExpression::~ParenthesisedExpression() { delete this->expression; }
+Parenthesesed::~Parenthesesed() { delete this->expression; }
+
+Unary::Unary() { this->type = Types::unary; }
+
+Unary::~Unary() { delete expression; }
 }  // namespace HashLang

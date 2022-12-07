@@ -41,7 +41,7 @@ class Expression* Parser::parseTerm() {
     next();
     class Expression* right = parseFactor();
 
-    class BinaryExpression* bin = new BinaryExpression();
+    class Binary* bin = new Binary();
     bin->left = left;
     bin->value = op;
     bin->right = right;
@@ -54,12 +54,31 @@ class Expression* Parser::parseTerm() {
 class Expression* Parser::parseFactor() {
   class Expression* left = parseCurrent();
 
+  if (match(Types::open_parenthesis)) {
+    class Parenthesesed* node = new Parenthesesed();
+
+    node->open = this->current;
+    next();
+
+    auto parsed = parseTerm();
+    node->expression = (Binary*)parsed;
+
+    while (match(Types::skip)) next();
+
+    node->close = this->current;
+    next();
+
+    node->value = left->value;
+
+    return node;
+  }
+
   while (current.type == Types::slash || current.type == Types::asterisk) {
     struct Token op = this->current;
     next();
     class Expression* right = parseCurrent();
 
-    class BinaryExpression* bin = new BinaryExpression();
+    class Binary* bin = new Binary();
     bin->left = left;
     bin->value = op;
     bin->right = right;
@@ -70,6 +89,18 @@ class Expression* Parser::parseFactor() {
 }
 
 class Expression* Parser::parseCurrent() {
+  if (match(Types::minus)) {
+    class Unary* node = new Unary();
+
+    node->value = this->current;
+    next();
+
+    auto parsed = parseTerm();
+    node->expression = parsed;
+
+    return node;
+  }
+
   if (match(Types::number)) {
     class Number* node = new Number();
     node->value = this->current;
@@ -78,13 +109,13 @@ class Expression* Parser::parseCurrent() {
   }
 
   if (match(Types::open_parenthesis)) {
-    class ParenthesisedExpression* node = new ParenthesisedExpression();
+    class Parenthesesed* node = new Parenthesesed();
 
     node->open = this->current;
     next();
 
     auto parsed = parseTerm();
-    node->expression = (BinaryExpression*)parsed;
+    node->expression = parsed;
 
     while (match(Types::skip)) next();
 
