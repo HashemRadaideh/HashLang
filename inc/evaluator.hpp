@@ -13,7 +13,7 @@ class Evaluator {
   void printTokens();
 
  protected:
-  std::string tokenInfo(enum Types);
+  std::string type(enum Types);
   int eval(class Expression*);
 
  private:

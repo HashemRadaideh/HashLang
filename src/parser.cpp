@@ -41,7 +41,7 @@ class Expression* Parser::parseTerm() {
 
     class Binary* bin = new Binary();
     bin->left = left;
-    bin->value = op;
+    bin->token = op;
     bin->right = right;
     left = bin;
   }
@@ -66,7 +66,7 @@ class Expression* Parser::parseFactor() {
     node->close = this->current;
     next();
 
-    node->value = left->value;
+    node->token = left->token;
 
     return node;
   }
@@ -79,7 +79,7 @@ class Expression* Parser::parseFactor() {
 
     class Binary* bin = new Binary();
     bin->left = left;
-    bin->value = op;
+    bin->token = op;
     bin->right = right;
     left = bin;
   }
@@ -88,13 +88,13 @@ class Expression* Parser::parseFactor() {
 }
 
 class Expression* Parser::parseCurrent() {
-  if (match(Types::minus)) {
+  if (match(Types::plus) || match(Types::minus) || match(Types::bang)) {
     class Unary* node = new Unary();
 
-    node->value = this->current;
+    node->token = this->current;
     next();
 
-    auto parsed = parseTerm();
+    class Expression* parsed = parseTerm();
     node->expression = parsed;
 
     return node;
@@ -102,7 +102,14 @@ class Expression* Parser::parseCurrent() {
 
   if (match(Types::number)) {
     class Number* node = new Number();
-    node->value = this->current;
+    node->token = this->current;
+    next();
+    return node;
+  }
+
+  if (match(Types::boolean)) {
+    class Boolean* node = new Boolean();
+    node->token = this->current;
     next();
     return node;
   }

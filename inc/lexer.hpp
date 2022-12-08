@@ -13,6 +13,7 @@ class Lexer {
   void next();
 
  protected:
+  struct Token matcher(struct Token);
   char peek(int);
   bool isNumber(char);
   bool isAlpha(char);

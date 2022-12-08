@@ -27,9 +27,9 @@ void Evaluator::printTokens() {
       print(bin->left);
     }
 
-    std::cout << "Token: " << tokenInfo(node->value.type) << std::endl
-              << "Value: " << node->value.value << std::endl
-              << "At: " << node->value.start << " - " << node->value.end
+    std::cout << "Token: " << type(node->token.type) << std::endl
+              << "Value: " << node->token.value << std::endl
+              << "At: " << node->token.start << " - " << node->token.end
               << std::endl;
 
     if (node->type == Types::binary) {
@@ -48,8 +48,9 @@ void Evaluator::printTree() {
 
     branch = branch != "" ? isLast ? "└──" : "├──" : "";
 
-    std::cout << indent << branch << "[" << tokenInfo(node->type) << "] ";
-    if (node->type != Types::parenthesised) std::cout << node->value.value;
+    std::cout << indent << branch << "[" << type(node->type) << "] ";
+    if (node->type != Types::parenthesised)
+      std::cout << node->token.value << " (" << type(node->token.type) << ")";
     std::cout << std::endl;
 
     indent += branch != "" ? isLast ? "   " : "│  " : "";
@@ -62,21 +63,21 @@ void Evaluator::printTree() {
     if (node->type == Types::parenthesised) {
       Parenthesesed* paren = (Parenthesesed*)node;
 
-      if (paren->value.value != "") {
+      if (paren->token.value != "") {
         std::cout << indent << "├──"
-                  << "[" << tokenInfo(paren->value.type) << "]  "
-                  << paren->value.value << std::endl;
+                  << "(" << type(paren->token.type) << ")  "
+                  << paren->token.value << std::endl;
       }
 
       std::cout << indent << "├──"
-                << "[" << tokenInfo(paren->open.type) << "]  "
-                << paren->open.value << std::endl;
+                << "[" << type(paren->open.type) << "]  " << paren->open.value
+                << std::endl;
 
       print(paren->expression, paren->expression == nullptr, indent, branch);
 
       std::cout << indent << "└──"
-                << "[" << tokenInfo(paren->close.type) << "] "
-                << paren->close.value << std::endl;
+                << "(" << type(paren->close.type) << ") " << paren->close.value
+                << std::endl;
     }
 
     if (node->type == Types::binary) {
@@ -92,63 +93,92 @@ void Evaluator::printTree() {
 int Evaluator::eval(class Expression* node) {
   if (node->type == Types::number) {
     int number;
-    std::stringstream(((Number*)node)->value.value) >> number;
+    std::stringstream(((Number*)node)->token.value) >> number;
     return number;
+  }
+
+  if (node->type == Types::boolean) {
+    if (node->token.value == "true") return 1;
+    return 0;
   }
 
   if (node->type == Types::unary) {
     Unary* uni = (Unary*)node;
-    return eval(uni->expression) * -1;
+    if (uni->token.type == Types::minus)
+      return eval(uni->expression) * -1;
+    else if (uni->token.type == Types::bang)
+      return !eval(uni->expression);
+    return eval(uni->expression);
   }
 
   if (node->type == Types::binary) {
     Binary* bin = (Binary*)node;
-    int left = eval(bin->left);
-    int right = eval(bin->right);
-    char op = bin->value.value[0];
-    switch (op) {
-      case '+':
-        return left + right;
+    if (bin->left->type == Types::number && bin->right->type == Types::number) {
+      int left = eval(bin->left);
+      int right = eval(bin->right);
+      char op = bin->token.value[0];
+      switch (op) {
+        case '+':
+          return left + right;
 
-      case '-':
-        return left - right;
+        case '-':
+          return left - right;
 
-      case '*':
-        return left * right;
+        case '*':
+          return left * right;
 
-      case '/':
-        return left / right;
+        case '/':
+          return left / right;
 
-      case '^':
-        return pow(left, right);
+        case '^':
+          return pow(left, right);
+      }
+    }
+
+    if (bin->left->type == Types::boolean &&
+        bin->right->type == Types::boolean) {
+      bool left = eval(bin->left);
+      bool right = eval(bin->right);
+      char op = bin->token.value[0];
+      switch (op) {
+        case '+':
+          return left || right;
+
+        case '*':
+          return left && right;
+      }
     }
   }
 
   if (node->type == Types::parenthesised) {
     int factor = 1;
-    if (node->value.value != "") {
+    if (node->token.value != "") {
       class Expression* expr;
-      if (node->value.type == Types::number) expr = new Number();
-      expr->value = node->value;
+      if (node->token.type == Types::number) expr = new Number();
+      expr->token = node->token;
       factor = eval(expr);
     }
     return eval(((Parenthesesed*)node)->expression) * factor;
   }
 
-  return 0;
+  return -1;
 }
 
-std::string Evaluator::tokenInfo(enum Types type) {
+std::string Evaluator::type(enum Types type) {
   if (type == Types::number)
     return "number literal";
   else if (type == Types::string)
     return "string literal";
+  else if (type == Types::boolean)
+    return "boolean literal";
   else if (type == Types::plus)
-    return "plus sign";
+    return "plus operator";
   else if (type == Types::minus)
-    return "minus sign";
+    return "minus operator";
   else if (type == Types::asterisk)
-    return "asterisk";
+    return "asterisk operator";
+  else if (type == Types::bang)
+    return "bang operator";
   else if (type == Types::binary)
     return "binary expression";
   else if (type == Types::unary)

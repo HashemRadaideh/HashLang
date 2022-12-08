@@ -9,7 +9,7 @@ class Expression {
   Expression();
   ~Expression();
 
-  struct Token value;
+  struct Token token;
   enum Types type;
 };
 
@@ -17,6 +17,12 @@ class Number : public Expression {
  public:
   Number();
   ~Number();
+};
+
+class Boolean : public Expression {
+ public:
+  Boolean();
+  ~Boolean();
 };
 
 class Unary : public Expression {

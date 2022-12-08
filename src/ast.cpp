@@ -25,4 +25,8 @@ Parenthesesed::~Parenthesesed() { delete this->expression; }
 Unary::Unary() { this->type = Types::unary; }
 
 Unary::~Unary() { delete expression; }
+
+Boolean::Boolean() { this->type = Types::boolean; }
+
+Boolean::~Boolean() {}
 }  // namespace HashLang

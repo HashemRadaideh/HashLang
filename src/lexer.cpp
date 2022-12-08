@@ -54,6 +54,9 @@ struct Token Lexer::getToken() {
     case '^':
       return Token(Types::power, "^", this->position - 1);
 
+    case '!':
+      return Token(Types::bang, "!", this->position - 1);
+
     case '(':
       return Token(Types::open_parenthesis, "(", this->position - 1);
 
@@ -92,23 +95,35 @@ struct Token Lexer::getToken() {
     token.end = this->position - 1;
 
     return token;
-  } else if (isAlpha(this->current)) {
+  } else if (isAlpha(this->current) || this->current == '_') {
     struct Token token = Token();
 
-    token.type = Types::identifier;
     token.value = this->current;
-
     token.start = this->position - 1;
-    while (isAlpha(peek(0)) || isNumber(peek(0))) {
+    while (isAlpha(peek(0)) || isNumber(peek(0)) || peek(0) == '_') {
       next();
       token.value += this->current;
     }
     token.end = this->position - 1;
 
+    token = matcher(token);
+
     return token;
   }
 
   return Token();
+}
+
+struct Token Lexer::matcher(struct Token token) {
+  if (token.value == "true")
+    token.type = Types::boolean;
+  else if (token.value == "false")
+    token.type = Types::boolean;
+  else if (token.value == "if")
+    token.type = Types::keyword;
+  else
+    token.type = Types::identifier;
+  return token;
 }
 
 char Lexer::peek(int index = 0) { return this->text[this->position + index]; }

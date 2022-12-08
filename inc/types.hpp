@@ -3,8 +3,10 @@
 namespace HashLang {
 enum class Types {
   identifier,
+  keyword,
 
   number,
+  boolean,
   string,
 
   equal,
@@ -16,6 +18,8 @@ enum class Types {
   power,
 
   back_slash,
+
+  bang,
 
   open_parenthesis,
   close_parenthesis,
