@@ -1,5 +1,6 @@
 #include "evaluator.hpp"
 
+#include <cmath>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -26,9 +27,9 @@ void Evaluator::printTokens() {
       print(bin->left);
     }
 
-    std::cout << "Token: " << tokenInfo(node->value.type)
-              << "\nValue: " << node->value.value
-              << "\nAt: " << node->value.start << " - " << node->value.end
+    std::cout << "Token: " << tokenInfo(node->value.type) << std::endl
+              << "Value: " << node->value.value << std::endl
+              << "At: " << node->value.start << " - " << node->value.end
               << std::endl;
 
     if (node->type == Types::binary) {
@@ -40,9 +41,9 @@ void Evaluator::printTokens() {
 }
 
 void Evaluator::printTree() {
-  std::function<void(class Expression*, bool, std::string, std::string)> print =
-      [&](class Expression* node, bool isLast = true, std::string indent = "",
-          std::string branch = "") -> void {
+  std::function<void(class Expression*, bool, std::string, std::string)> print;
+  print = [&](class Expression* node, bool isLast = true,
+              std::string indent = "", std::string branch = "") -> void {
     if (node == nullptr) return;
 
     branch = branch != "" ? isLast ? "└──" : "├──" : "";
@@ -102,24 +103,24 @@ int Evaluator::eval(class Expression* node) {
 
   if (node->type == Types::binary) {
     Binary* bin = (Binary*)node;
-    if (bin->value.type == Types::plus || bin->value.type == Types::minus ||
-        bin->value.type == Types::asterisk || bin->value.type == Types::slash) {
-      int left = eval(bin->left);
-      int right = eval(bin->right);
-      char op = bin->value.value[0];
-      switch (op) {
-        case '+':
-          return left + right;
+    int left = eval(bin->left);
+    int right = eval(bin->right);
+    char op = bin->value.value[0];
+    switch (op) {
+      case '+':
+        return left + right;
 
-        case '-':
-          return left - right;
+      case '-':
+        return left - right;
 
-        case '*':
-          return left * right;
+      case '*':
+        return left * right;
 
-        case '/':
-          return left / right;
-      }
+      case '/':
+        return left / right;
+
+      case '^':
+        return pow(left, right);
     }
   }
 

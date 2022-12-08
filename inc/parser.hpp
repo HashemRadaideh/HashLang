@@ -1,8 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-
 #include "ast.hpp"
 #include "lexer.hpp"
 #include "token.hpp"

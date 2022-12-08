@@ -1,8 +1,6 @@
 #include "lexer.hpp"
 
-#include <iostream>
 #include <string>
-#include <vector>
 
 #include "token.hpp"
 #include "types.hpp"
@@ -52,6 +50,9 @@ struct Token Lexer::getToken() {
 
     case '\\':
       return Token(Types::back_slash, "\\", this->position - 1);
+
+    case '^':
+      return Token(Types::power, "^", this->position - 1);
 
     case '(':
       return Token(Types::open_parenthesis, "(", this->position - 1);

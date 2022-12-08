@@ -1,8 +1,6 @@
 #include "parser.hpp"
 
 #include <functional>
-#include <iostream>
-#include <vector>
 
 #include "ast.hpp"
 #include "lexer.hpp"
@@ -73,7 +71,8 @@ class Expression* Parser::parseFactor() {
     return node;
   }
 
-  while (current.type == Types::slash || current.type == Types::asterisk) {
+  while (current.type == Types::power || current.type == Types::slash ||
+         current.type == Types::asterisk) {
     struct Token op = this->current;
     next();
     class Expression* right = parseCurrent();

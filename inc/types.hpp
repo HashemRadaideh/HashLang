@@ -8,11 +8,15 @@ enum class Types {
   string,
 
   equal,
+
   plus,
   minus,
   asterisk,
   slash,
+  power,
+
   back_slash,
+
   open_parenthesis,
   close_parenthesis,
 
