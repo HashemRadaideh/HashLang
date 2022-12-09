@@ -4,7 +4,7 @@
 
 #include "token.hpp"
 
-namespace HashLang {
+namespace Hash {
 class Lexer {
  public:
   Lexer(std::string&);

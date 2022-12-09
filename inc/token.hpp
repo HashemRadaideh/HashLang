@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 
-namespace HashLang {
+namespace Hash {
 struct Token {
   Token(enum Types type = Types::unkown, std::string value = "", int start = 0,
         int end = 0) {

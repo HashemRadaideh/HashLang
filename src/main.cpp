@@ -10,28 +10,24 @@
 #include "parser.hpp"
 #include "token.hpp"
 
+static bool showTree = false;
 static bool showTokens = false;
-static bool showTree = true;
 
 void interpret(std::string line) {
   if (line == "exit()") {
     exit(0);
-  } else if (line == "\0") {
-    std::cerr << "Input invalid\n";
-    return;
-  } else if (line == "tree()") {
+  } else if (line == "#tree") {
     showTree = !showTree;
     return;
-  } else if (line == "tokens()") {
+  } else if (line == "#tokens") {
     showTokens = !showTokens;
+    return;
+  } else if (line == "\0") {
+    std::cerr << "Invalid input.\n";
     return;
   }
 
-  HashLang::Evaluator evaluator = line;
-
-  if (showTokens) evaluator.printTokens();
-  if (showTree) evaluator.printTree();
-
+  Hash::Evaluator evaluator = Hash::Evaluator(line, showTokens, showTree);
   std::cout << evaluator.evaluation() << std::endl;
 }
 

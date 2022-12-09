@@ -5,7 +5,7 @@
 #include "token.hpp"
 #include "types.hpp"
 
-namespace HashLang {
+namespace Hash {
 Lexer::Lexer(std::string &text) {
   this->text = text;
   this->position = 0;
@@ -136,4 +136,4 @@ bool Lexer::isAlpha(char character) {
   return (character == '_') || (character >= 'A' && character <= 'Z') ||
          (character >= 'a' && character <= 'z');
 }
-}  // namespace HashLang
+}  // namespace Hash

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace HashLang {
+namespace Hash {
 enum class Types {
   identifier,
   keyword,

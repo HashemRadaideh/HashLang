@@ -3,21 +3,19 @@
 #include "ast.hpp"
 #include "parser.hpp"
 
-namespace HashLang {
+namespace Hash {
 class Evaluator {
  public:
-  Evaluator(std::string&);
-  ~Evaluator() = default;
+  Evaluator(std::string&, bool, bool);
+  ~Evaluator();
   int evaluation();
-  void printTree();
-  void printTokens();
 
  protected:
-  std::string type(enum Types);
+  void printTree();
   int eval(class Expression*);
 
  private:
   class Parser parser;
   class Expression* root;
 };
-}  // namespace HashLang
+}  // namespace Hash

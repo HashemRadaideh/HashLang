@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BINARY_DIR bin)
 set(CMAKE_SOURCE_DIR src)
 
-set(NAME hashlang)
+set(NAME hash)
 project(${NAME} VERSION 1.0)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp)

@@ -4,10 +4,10 @@
 #include "lexer.hpp"
 #include "token.hpp"
 
-namespace HashLang {
+namespace Hash {
 class Parser {
  public:
-  Parser(std::string&);
+  Parser(std::string&, bool);
   Parser() = default;
   ~Parser();
   class Expression* getExpression();
@@ -17,10 +17,12 @@ class Parser {
   class Expression* parseTerm();
   class Expression* parseFactor();
   class Expression* parseCurrent();
+  std::string type(enum Types);
 
  private:
+  bool printTokens;
   class Lexer lexer;
   class Expression* root;
   struct Token current;
 };
-}  // namespace HashLang
+}  // namespace Hash

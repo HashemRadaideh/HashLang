@@ -1,25 +1,35 @@
 #include "parser.hpp"
 
 #include <functional>
+#include <iostream>
 
 #include "ast.hpp"
 #include "lexer.hpp"
 #include "token.hpp"
 #include "types.hpp"
 
-namespace HashLang {
-Parser::Parser(std::string& line) : lexer(line) {
+namespace Hash {
+Parser::Parser(std::string& line, bool printTokens = false) : lexer(line) {
+  this->printTokens = printTokens;
   this->current = next();
   if (this->current.type != Types::eof) this->root = parse();
 }
 
-Parser::~Parser() { delete root; }
+Parser::~Parser() { delete this->root; }
 
 class Expression* Parser::getExpression() { return this->root; }
 
 struct Token Parser::next() {
   struct Token token = lexer.getToken();
   lexer.next();
+
+  if (printTokens) {
+    if (token.type != Types::skip && token.type != Types::eof) {
+      std::cout << "Token: " << type(token.type) << std::endl
+                << "Value: " << token.value << std::endl
+                << "At: " << token.start << " - " << token.end << std::endl;
+    }
+  }
 
   if (token.type == Types::skip) token = next();
   this->current = token;
@@ -39,11 +49,7 @@ class Expression* Parser::parseTerm() {
     next();
     class Expression* right = parseFactor();
 
-    class Binary* bin = new Binary();
-    bin->left = left;
-    bin->token = op;
-    bin->right = right;
-    left = bin;
+    left = new Binary(left, op, right);
   }
 
   return left;
@@ -55,18 +61,17 @@ class Expression* Parser::parseFactor() {
   if (match(Types::open_parenthesis)) {
     class Parenthesesed* node = new Parenthesesed();
 
-    node->open = this->current;
+    node->setOpen(this->current);
     next();
 
-    auto parsed = parseTerm();
-    node->expression = (Binary*)parsed;
+    node->setExpression(parseTerm());
 
     while (match(Types::skip)) next();
 
-    node->close = this->current;
+    node->setClose(this->current);
     next();
 
-    node->token = left->token;
+    node->setValue(left->getValue());
 
     return node;
   }
@@ -77,11 +82,7 @@ class Expression* Parser::parseFactor() {
     next();
     class Expression* right = parseCurrent();
 
-    class Binary* bin = new Binary();
-    bin->left = left;
-    bin->token = op;
-    bin->right = right;
-    left = bin;
+    left = new Binary(left, op, right);
   }
 
   return left;
@@ -91,25 +92,24 @@ class Expression* Parser::parseCurrent() {
   if (match(Types::plus) || match(Types::minus) || match(Types::bang)) {
     class Unary* node = new Unary();
 
-    node->token = this->current;
+    node->setValue(this->current);
     next();
 
-    class Expression* parsed = parseTerm();
-    node->expression = parsed;
+    node->setExpression(parseTerm());
 
     return node;
   }
 
   if (match(Types::number)) {
     class Number* node = new Number();
-    node->token = this->current;
+    node->setValue(this->current);
     next();
     return node;
   }
 
   if (match(Types::boolean)) {
     class Boolean* node = new Boolean();
-    node->token = this->current;
+    node->setValue(this->current);
     next();
     return node;
   }
@@ -117,15 +117,14 @@ class Expression* Parser::parseCurrent() {
   if (match(Types::open_parenthesis)) {
     class Parenthesesed* node = new Parenthesesed();
 
-    node->open = this->current;
+    node->setOpen(this->current);
     next();
 
-    auto parsed = parseTerm();
-    node->expression = parsed;
+    node->setExpression(parseTerm());
 
     while (match(Types::skip)) next();
 
-    node->close = this->current;
+    node->setClose(this->current);
     next();
 
     return node;
@@ -133,4 +132,32 @@ class Expression* Parser::parseCurrent() {
 
   return new Expression();
 }
-}  // namespace HashLang
+
+std::string Parser::type(enum Types type) {
+  if (type == Types::number)
+    return "number literal";
+  else if (type == Types::string)
+    return "string literal";
+  else if (type == Types::boolean)
+    return "boolean literal";
+  else if (type == Types::plus)
+    return "plus operator";
+  else if (type == Types::minus)
+    return "minus operator";
+  else if (type == Types::asterisk)
+    return "asterisk operator";
+  else if (type == Types::bang)
+    return "bang operator";
+  else if (type == Types::binary)
+    return "binary expression";
+  else if (type == Types::unary)
+    return "unary expression";
+  else if (type == Types::open_parenthesis)
+    return "open parenthesis";
+  else if (type == Types::close_parenthesis)
+    return "close parenthesis";
+  else if (type == Types::parenthesised)
+    return "parenthesised expression";
+  return "Unkown token type";
+}
+}  // namespace Hash
