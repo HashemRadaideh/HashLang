@@ -12,7 +12,7 @@ namespace Hash {
 Parser::Parser(std::string& line, bool printTokens = false) : lexer(line) {
   this->printTokens = printTokens;
   this->current = next();
-  if (this->current.type != Types::eof) this->root = parse();
+  this->root = parse();
 }
 
 Parser::~Parser() { delete this->root; }
@@ -26,7 +26,7 @@ struct Token Parser::next() {
   if (printTokens) {
     if (token.type != Types::skip && token.type != Types::eof) {
       std::cout << "Token: " << type(token.type) << std::endl
-                << "Value: " << token.value << std::endl
+                << "Value: " << token.content << std::endl
                 << "At: " << token.start << " - " << token.end << std::endl;
     }
   }
@@ -38,8 +38,6 @@ struct Token Parser::next() {
 }
 
 class Expression* Parser::parse() { return parseTerm(); }
-
-bool Parser::match(enum Types type) { return this->current.type == type; }
 
 class Expression* Parser::parseTerm() {
   class Expression* left = parseFactor();
@@ -58,7 +56,7 @@ class Expression* Parser::parseTerm() {
 class Expression* Parser::parseFactor() {
   class Expression* left = parseCurrent();
 
-  if (match(Types::open_parenthesis)) {
+  if (this->current.type == Types::open_parenthesis) {
     class Parenthesesed* node = new Parenthesesed();
 
     node->setOpen(this->current);
@@ -66,12 +64,12 @@ class Expression* Parser::parseFactor() {
 
     node->setExpression(parseTerm());
 
-    while (match(Types::skip)) next();
+    while (this->current.type == Types::skip) next();
 
     node->setClose(this->current);
     next();
 
-    node->setValue(left->getValue());
+    node->getToken(left->getValue());
 
     return node;
   }
@@ -89,32 +87,31 @@ class Expression* Parser::parseFactor() {
 }
 
 class Expression* Parser::parseCurrent() {
-  if (match(Types::plus) || match(Types::minus) || match(Types::bang)) {
+  if (this->current.type == Types::plus || this->current.type == Types::minus ||
+      this->current.type == Types::bang) {
     class Unary* node = new Unary();
 
-    node->setValue(this->current);
+    node->getToken(this->current);
     next();
 
-    node->setExpression(parseTerm());
+    node->setExpression(parseFactor());
 
     return node;
   }
 
-  if (match(Types::number)) {
-    class Number* node = new Number();
-    node->setValue(this->current);
+  if (this->current.type == Types::number) {
+    class Number* node = new Number(this->current);
     next();
     return node;
   }
 
-  if (match(Types::boolean)) {
-    class Boolean* node = new Boolean();
-    node->setValue(this->current);
+  if (this->current.type == Types::boolean) {
+    class Boolean* node = new Boolean(this->current);
     next();
     return node;
   }
 
-  if (match(Types::open_parenthesis)) {
+  if (this->current.type == Types::open_parenthesis) {
     class Parenthesesed* node = new Parenthesesed();
 
     node->setOpen(this->current);
@@ -122,12 +119,16 @@ class Expression* Parser::parseCurrent() {
 
     node->setExpression(parseTerm());
 
-    while (match(Types::skip)) next();
+    while (this->current.type == Types::skip) next();
 
     node->setClose(this->current);
     next();
 
     return node;
+  }
+
+  if (this->current.type == Types::eof) {
+    return new Expression(Types::eof, this->current);
   }
 
   return new Expression();

@@ -73,7 +73,7 @@ struct Token Lexer::getToken() {
       token.start = this->position;
       do {
         next();
-        token.value += this->current != myQuote ? this->current : '\0';
+        token.content += this->current != myQuote ? this->current : '\0';
       } while (this->current != myQuote);
       token.end = this->position - 1;
 
@@ -85,12 +85,12 @@ struct Token Lexer::getToken() {
     struct Token token = Token();
 
     token.type = Types::number;
-    token.value = this->current;
+    token.content = this->current;
 
     token.start = this->position - 1;
     while (isNumber(peek(0))) {
       next();
-      token.value += this->current;
+      token.content += this->current;
     }
     token.end = this->position - 1;
 
@@ -98,11 +98,11 @@ struct Token Lexer::getToken() {
   } else if (isAlpha(this->current) || this->current == '_') {
     struct Token token = Token();
 
-    token.value = this->current;
+    token.content = this->current;
     token.start = this->position - 1;
     while (isAlpha(peek(0)) || isNumber(peek(0)) || peek(0) == '_') {
       next();
-      token.value += this->current;
+      token.content += this->current;
     }
     token.end = this->position - 1;
 
@@ -115,11 +115,11 @@ struct Token Lexer::getToken() {
 }
 
 struct Token Lexer::matcher(struct Token token) {
-  if (token.value == "true")
+  if (token.content == "true")
     token.type = Types::boolean;
-  else if (token.value == "false")
+  else if (token.content == "false")
     token.type = Types::boolean;
-  else if (token.value == "if")
+  else if (token.content == "if")
     token.type = Types::keyword;
   else
     token.type = Types::identifier;

@@ -8,11 +8,11 @@ class Evaluator {
  public:
   Evaluator(std::string&, bool, bool);
   ~Evaluator();
-  int evaluation();
+  std::string evaluation();
 
  protected:
-  void printTree();
-  int eval(class Expression*);
+  void printTree(class Expression*, bool, std::string, std::string);
+  int eval(class Expression*, enum Types&);
 
  private:
   class Parser parser;

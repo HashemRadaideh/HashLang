@@ -9,7 +9,7 @@ struct Token {
   Token(enum Types type = Types::unkown, std::string value = "", int start = 0,
         int end = 0) {
     this->type = type;
-    this->value = value;
+    this->content = value;
     this->start = start;
     this->end = (start > end) ? start : end;
   }
@@ -17,8 +17,8 @@ struct Token {
   ~Token() = default;
 
   enum Types type;
-  std::string value;
+  std::string content;
   int start;
   int end;
 };
-}  // namespace HashLang
+}  // namespace Hash

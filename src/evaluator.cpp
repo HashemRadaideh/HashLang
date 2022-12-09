@@ -15,138 +15,141 @@ Evaluator::Evaluator(std::string& line, bool printTokens = false,
                      bool printTree = false)
     : parser(line, printTokens) {
   this->root = parser.getExpression();
-  if (printTree) this->printTree();
+  if (printTree) this->printTree(this->root, true, "", "");
 }
 
-Evaluator::~Evaluator() {
-  // delete this->root;
+Evaluator::~Evaluator() {}  // delete this->root;
+
+std::string Evaluator::evaluation() {
+  enum Types type;
+  if (this->root->getType() == Types::eof) return "";
+  return std::to_string(eval(this->root, type));
 }
 
-int Evaluator::evaluation() { return eval(this->root); }
+void Evaluator::printTree(class Expression* node, bool isLast = true,
+                          std::string indent = "", std::string branch = "") {
+  if (node == nullptr) return;
 
-void Evaluator::printTree() {
-  std::function<void(class Expression*, bool, std::string, std::string)> print;
-  print = [&](class Expression* node, bool isLast = true,
-              std::string indent = "", std::string branch = "") -> void {
-    if (node == nullptr) return;
+  branch = branch != "" ? isLast ? "└──" : "├──" : "";
 
-    branch = branch != "" ? isLast ? "└──" : "├──" : "";
+  std::cout << indent << branch << "[" << parser.type(node->getType()) << "] ";
+  if (node->getType() != Types::parenthesised)
+    std::cout << node->getValue().content << " ("
+              << parser.type(node->getValue().type) << ")";
+  std::cout << std::endl;
 
-    std::cout << indent << branch << "[" << parser.type(node->getType())
-              << "] ";
-    if (node->getType() != Types::parenthesised)
-      std::cout << node->getValue().value << " ("
-                << parser.type(node->getValue().type) << ")";
-    std::cout << std::endl;
+  indent += branch != "" ? isLast ? "   " : "│  " : "";
+  branch = isLast ? "└──" : "├──";
 
-    indent += branch != "" ? isLast ? "   " : "│  " : "";
-    branch = isLast ? "└──" : "├──";
+  if (node->getType() == Types::unary) {
+    printTree(((Unary*)node)->getExpression(), true, indent, branch);
+  }
 
-    if (node->getType() == Types::unary) {
-      print(((Unary*)node)->getExpression(), true, indent, branch);
-    }
+  if (node->getType() == Types::parenthesised) {
+    Parenthesesed* paren = (Parenthesesed*)node;
 
-    if (node->getType() == Types::parenthesised) {
-      Parenthesesed* paren = (Parenthesesed*)node;
-
-      if (paren->getValue().value != "") {
-        std::cout << indent << "├──"
-                  << "(" << parser.type(paren->getValue().type) << ")  "
-                  << paren->getValue().value << std::endl;
-      }
-
+    if (paren->getValue().content != "") {
       std::cout << indent << "├──"
-                << "[" << parser.type(paren->getOpen().type) << "]  "
-                << paren->getOpen().value << std::endl;
-
-      print(paren->getExpression(), paren->getExpression() == nullptr, indent,
-            branch);
-
-      std::cout << indent << "└──"
-                << "(" << parser.type(paren->getClose().type) << ") "
-                << paren->getClose().value << std::endl;
+                << "(" << parser.type(paren->getValue().type) << ")  "
+                << paren->getValue().content << std::endl;
     }
 
-    if (node->getType() == Types::binary) {
-      Binary* bin = (Binary*)node;
-      print(bin->getLeft(), bin->getRight() == nullptr, indent, branch);
-      print(bin->getRight(), true, indent, branch);
-    }
-  };
+    std::cout << indent << "├──"
+              << "[" << parser.type(paren->getOpen().type) << "]  "
+              << paren->getOpen().content << std::endl;
 
-  print(this->root, true, "", "");
+    printTree(paren->getExpression(), paren->getExpression() == nullptr, indent,
+              branch);
+
+    std::cout << indent << "└──"
+              << "(" << parser.type(paren->getClose().type) << ") "
+              << paren->getClose().content << std::endl;
+  }
+
+  if (node->getType() == Types::binary) {
+    Binary* bin = (Binary*)node;
+    printTree(bin->getLeft(), bin->getRight() == nullptr, indent, branch);
+    printTree(bin->getRight(), true, indent, branch);
+  }
 }
 
-int Evaluator::eval(class Expression* node) {
+int Evaluator::eval(class Expression* node, enum Types& type) {
   if (node->getType() == Types::number) {
+    type = Types::number;
     int number;
-    std::stringstream(((Number*)node)->getValue().value) >> number;
+    std::stringstream(((Number*)node)->getValue().content) >> number;
     return number;
   }
 
   if (node->getType() == Types::boolean) {
-    if (node->getValue().value == "true") return 1;
+    type = Types::boolean;
+    if (node->getValue().content == "true") return 1;
     return 0;
   }
 
   if (node->getType() == Types::unary) {
     Unary* uni = (Unary*)node;
-    if (uni->getValue().type == Types::minus)
-      return eval(uni->getExpression()) * -1;
-    else if (uni->getValue().type == Types::bang)
-      return !eval(uni->getExpression());
-    return eval(uni->getExpression());
+    int number = eval(uni->getExpression(), type);
+    if (type == Types::number) {
+      if (uni->getValue().type == Types::minus) return number * -1;
+      return number;
+    } else if (type == Types::boolean) {
+      if (uni->getValue().type == Types::bang) return !number;
+    }
+    return eval(uni->getExpression(), type);
   }
 
   if (node->getType() == Types::binary) {
     Binary* bin = (Binary*)node;
-    if (bin->getLeft()->getType() == Types::number &&
-        bin->getRight()->getType() == Types::number) {
-      int left = eval(bin->getLeft());
-      int right = eval(bin->getRight());
-      char op = bin->getValue().value[0];
-      switch (op) {
-        case '+':
-          return left + right;
 
-        case '-':
-          return left - right;
+    int left = eval(bin->getLeft(), type);
+    char op = bin->getValue().content[0];
 
-        case '*':
-          return left * right;
+    if (type == Types::boolean) {
+      int right = eval(bin->getRight(), type);
+      if (type == Types::boolean) {
+        switch (op) {
+          case '+':
+            return left || right;
 
-        case '/':
-          return left / right;
-
-        case '^':
-          return pow(left, right);
+          case '*':
+            return left && right;
+        }
       }
     }
 
-    if (bin->getLeft()->getType() == Types::boolean &&
-        bin->getRight()->getType() == Types::boolean) {
-      bool left = eval(bin->getLeft());
-      bool right = eval(bin->getRight());
-      char op = bin->getValue().value[0];
-      switch (op) {
-        case '+':
-          return left || right;
+    if (type == Types::number) {
+      int right = eval(bin->getRight(), type);
+      if (type == Types::number) {
+        switch (op) {
+          case '+':
+            return left + right;
 
-        case '*':
-          return left && right;
+          case '-':
+            return left - right;
+
+          case '*':
+            return left * right;
+
+          case '/':
+            return left / right;
+
+          case '^':
+            return pow(left, right);
+        }
       }
     }
   }
 
   if (node->getType() == Types::parenthesised) {
     int factor = 1;
-    if (node->getValue().value != "") {
+    if (node->getValue().content != "") {
       class Expression* expr;
       if (node->getValue().type == Types::number) expr = new Number();
       expr->getValue() = node->getValue();
-      factor = eval(expr);
+      factor = eval(expr, type);
     }
-    return eval(((Parenthesesed*)node)->getExpression()) * factor;
+    return eval(((Parenthesesed*)node)->getExpression(), type) * factor;
   }
 
   return -1;

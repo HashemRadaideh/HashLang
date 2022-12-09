@@ -12,7 +12,6 @@ class Parser {
   ~Parser();
   class Expression* getExpression();
   struct Token next();
-  bool match(enum Types);
   class Expression* parse();
   class Expression* parseTerm();
   class Expression* parseFactor();

@@ -18,11 +18,11 @@ enum Types Expression::getType() { return this->type; }
 
 struct Token Expression::getValue() { return this->token; }
 
-void Expression::setValue(struct Token token) { this->token = token; }
+void Expression::getToken(struct Token token) { this->token = token; }
 
 Number::Number(struct Token number) {
   this->setType(Types::number);
-  this->setValue(number);
+  this->getToken(number);
 }
 
 Number::Number() { this->setType(Types::number); }
@@ -31,15 +31,16 @@ Number::~Number() {}
 
 Boolean::Boolean(struct Token boolean) {
   this->setType(Types::boolean);
-  this->setValue(boolean);
+  this->getToken(boolean);
 }
 
 Boolean::Boolean() { this->setType(Types::boolean); }
 
 Boolean::~Boolean() {}
 
-Unary::Unary(class Expression *expression) {
+Unary::Unary(struct Token op, class Expression *expression) {
   this->setType(Types::unary);
+  this->getToken(op);
   this->expression = expression;
 }
 
@@ -57,7 +58,7 @@ Binary::Binary(class Expression *left, struct Token op,
                class Expression *right) {
   this->setType(Types::binary);
   this->left = left;
-  this->setValue(op);
+  this->getToken(op);
   this->right = right;
 }
 
@@ -79,7 +80,7 @@ void Binary::setRight(class Expression *expression) { this->right = right; }
 Ternary::Ternary(struct Token op, class Expression *left,
                  class Expression *middle, class Expression *right) {
   this->setType(Types::ternary);
-  this->setValue(op);
+  this->getToken(op);
   this->setLeft(left);
   this->middle = middle;
   this->setRight(right);
@@ -112,4 +113,4 @@ void Parenthesesed::setOpen(struct Token open) { this->open = open; }
 struct Token Parenthesesed::getClose() { return this->close; }
 
 void Parenthesesed::setClose(struct Token close) { this->close = close; }
-}  // namespace HashLang
+}  // namespace Hash

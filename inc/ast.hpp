@@ -12,7 +12,7 @@ class Expression {
   enum Types getType();
   void setType(enum Types);
   struct Token getValue();
-  void setValue(struct Token);
+  void getToken(struct Token);
 
  private:
   enum Types type;
@@ -39,7 +39,7 @@ class Boolean : public Expression {
 
 class Unary : public Expression {
  public:
-  Unary(class Expression *);
+  Unary(struct Token, class Expression *);
   Unary();
   ~Unary();
   class Expression *getExpression();
@@ -91,4 +91,4 @@ class Parenthesesed : public Unary {
   struct Token open;
   struct Token close;
 };
-}  // namespace HashLang
+}  // namespace Hash

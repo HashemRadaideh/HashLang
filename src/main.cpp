@@ -10,46 +10,49 @@
 #include "parser.hpp"
 #include "token.hpp"
 
-static bool showTree = false;
 static bool showTokens = false;
+static bool showTree = false;
 
-void interpret(std::string line) {
-  if (line == "exit()") {
-    exit(0);
-  } else if (line == "#tree") {
-    showTree = !showTree;
-    return;
-  } else if (line == "#tokens") {
-    showTokens = !showTokens;
-    return;
-  } else if (line == "\0") {
-    std::cerr << "Invalid input.\n";
-    return;
-  }
-
+bool interpret(std::string line) {
   Hash::Evaluator evaluator = Hash::Evaluator(line, showTokens, showTree);
-  std::cout << evaluator.evaluation() << std::endl;
+  if (evaluator.evaluation() != "") {
+    std::cout << evaluator.evaluation() << std::endl;
+    return 1;
+  }
+  return 0;
 }
 
 bool repl() {
+  bool status = true;
   while (true) {
-    std::cout << "-> ";
+    std::cout << (status ? "[^_^]=> " : "[x_x]=> ");
     std::string line = "";
     std::getline(std::cin, line);
-    interpret(line);
+
+    if (line == "exit()") {
+      exit(0);
+    } else if (line == "#tree") {
+      showTree = !showTree;
+      continue;
+    } else if (line == "#tokens") {
+      showTokens = !showTokens;
+      continue;
+    }
+
+    status = interpret(line);
   }
   return 1;
 }
 
 bool help(int status) {
-  std::cout << R"(Usage: hashlang <flag> <file_name>
+  std::cout << R"(Usage: hash <flag> <file>
 no options will launch interactive shell (repl) mode)"
             << std::endl;
   return status;
 }
 
-bool read_file(char *file_name) {
-  std::fstream file = std::fstream(file_name);
+bool readFile(std::string fileName) {
+  std::ifstream file = std::ifstream(fileName.c_str());
 
   if (file.fail()) {
     std::cerr << "File not found\n";
@@ -58,17 +61,17 @@ bool read_file(char *file_name) {
 
   std::string line = "";
   while (std::getline(file, line)) interpret(line);
-
   return 0;
 }
 
-auto main(int argc, char *argv[]) -> int {
+int main(int argc, char *argv[]) {
   if (argc < 2) return repl();
-  for (int i = 1; i <= argc; i++)
-    if (strcmp(argv[i], "--help") || strcmp(argv[i], "-h"))
-      return help(0);
-    else
-      return read_file(argv[i]);
+
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--help") || strcmp(argv[i], "-h")) return help(0);
+  }
+
+  readFile(argv[1]);
 
   return 0;
 }
