@@ -11,17 +11,16 @@ class Parser {
   Parser() = default;
   ~Parser();
   class Expression* getExpression();
-  struct Token next();
+  class Token next();
   class Expression* parse();
   class Expression* parseTerm();
   class Expression* parseFactor();
   class Expression* parseCurrent();
-  std::string type(enum Types);
 
  private:
   bool printTokens;
   class Lexer lexer;
   class Expression* root;
-  struct Token current;
+  class Token current;
 };
 }  // namespace Hash

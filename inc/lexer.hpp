@@ -9,11 +9,11 @@ class Lexer {
  public:
   Lexer(std::string&);
   ~Lexer() = default;
-  struct Token getToken();
+  class Token getToken();
   void next();
 
  protected:
-  struct Token matcher(struct Token);
+  class Token matcher(class Token);
   char peek(int);
   bool isNumber(char);
   bool isAlpha(char);
@@ -23,4 +23,4 @@ class Lexer {
   char current;
   int position;
 };
-}  // namespace HashLang
+}  // namespace Hash

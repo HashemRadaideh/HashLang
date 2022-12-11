@@ -6,22 +6,22 @@
 namespace Hash {
 class Expression {
  public:
-  Expression(enum Types, struct Token);
+  Expression(enum Types, class Token);
   Expression();
   ~Expression();
   enum Types getType();
   void setType(enum Types);
-  struct Token getValue();
-  void getToken(struct Token);
+  class Token getToken();
+  void setToken(class Token);
 
  private:
   enum Types type;
-  struct Token token;
+  class Token token;
 };
 
 class Number : public Expression {
  public:
-  Number(struct Token);
+  Number(class Token);
   Number();
   ~Number();
 
@@ -30,16 +30,25 @@ class Number : public Expression {
 
 class Boolean : public Expression {
  public:
-  Boolean(struct Token);
+  Boolean(class Token);
   Boolean();
   ~Boolean();
 
  private:
 };
 
+class String : public Expression {
+ public:
+  String(class Token);
+  String();
+  ~String();
+
+ private:
+};
+
 class Unary : public Expression {
  public:
-  Unary(struct Token, class Expression *);
+  Unary(class Token, class Expression *);
   Unary();
   ~Unary();
   class Expression *getExpression();
@@ -51,7 +60,7 @@ class Unary : public Expression {
 
 class Binary : public Expression {
  public:
-  Binary(class Expression *, struct Token, class Expression *);
+  Binary(class Expression *, class Token, class Expression *);
   Binary();
   ~Binary();
   class Expression *getLeft();
@@ -66,7 +75,7 @@ class Binary : public Expression {
 
 class Ternary : public Binary {
  public:
-  Ternary(struct Token, class Expression *, class Expression *,
+  Ternary(class Token, class Expression *, class Expression *,
           class Expression *);
   Ternary();
   ~Ternary();
@@ -79,16 +88,16 @@ class Ternary : public Binary {
 
 class Parenthesesed : public Unary {
  public:
-  Parenthesesed(struct Token, class Expression *, struct Token);
+  Parenthesesed(class Token, class Expression *, class Token);
   Parenthesesed();
   ~Parenthesesed();
-  struct Token getOpen();
-  void setOpen(struct Token);
-  struct Token getClose();
-  void setClose(struct Token);
+  class Token getOpen();
+  void setOpen(class Token);
+  class Token getClose();
+  void setClose(class Token);
 
  private:
-  struct Token open;
-  struct Token close;
+  class Token open;
+  class Token close;
 };
 }  // namespace Hash

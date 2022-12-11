@@ -1,21 +1,29 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 
 #include "types.hpp"
 
 namespace Hash {
-struct Token {
-  Token(enum Types type = Types::unkown, std::string value = "", int start = 0,
-        int end = 0) {
-    this->type = type;
-    this->content = value;
-    this->start = start;
-    this->end = (start > end) ? start : end;
-  }
+class Token {
+ public:
+  Token(enum Types, std::string, int, int);
+  Token(enum Types);
+  Token();
+  ~Token();
+  friend std::ostream& operator<<(std::ostream&, const class Token&);
+  static std::string getTypeof(enum Types);
+  enum Types getType();
+  void setType(enum Types);
+  std::string getContent();
+  void setContent(std::string);
+  int getStart();
+  void setStart(int);
+  int getEnd();
+  void setEnd(int);
 
-  ~Token() = default;
-
+ private:
   enum Types type;
   std::string content;
   int start;
