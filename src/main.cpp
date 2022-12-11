@@ -1,17 +1,11 @@
-#include <string.h>
-
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#include "ast.hpp"
 #include "evaluator.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
-#include "token.hpp"
 
 static bool showTokens = false;
-static bool showTree = false;
+static bool showTree = true;
 
 bool interpret(std::string line) {
   Hash::Evaluator evaluator = Hash::Evaluator(line, showTokens, showTree);
@@ -25,7 +19,7 @@ bool interpret(std::string line) {
 bool repl() {
   bool status = true;
   while (true) {
-    std::cout << (status ? "[^_^]=> " : "[x_x]=> ");
+    std::cout << (status ? "#[]> " : "#[]> ");
     std::string line = "";
     std::getline(std::cin, line);
 
@@ -52,7 +46,7 @@ no options will launch interactive shell (repl) mode)"
 }
 
 bool readFile(std::string fileName) {
-  std::ifstream file = std::ifstream(fileName.c_str());
+  std::ifstream file = std::ifstream(fileName);
 
   if (file.fail()) {
     std::cerr << "File not found\n";
@@ -65,13 +59,8 @@ bool readFile(std::string fileName) {
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) return repl();
-
-  for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--help") || strcmp(argv[i], "-h")) return help(0);
-  }
-
-  readFile(argv[1]);
-
-  return 0;
+  if (argc < 2)
+    return repl();
+  else
+    return readFile(argv[1]);
 }

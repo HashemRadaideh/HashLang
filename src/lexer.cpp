@@ -19,7 +19,7 @@ void Lexer::next() {
     this->current = this->text[this->position++];
 }
 
-struct Token Lexer::getToken() {
+class Token Lexer::getToken() {
   switch (this->current) {
     case '\0':
       return Token(Types::eof);
@@ -34,77 +34,92 @@ struct Token Lexer::getToken() {
       return Token(Types::skip);
 
     case '+':
-      return Token(Types::plus, "+", this->position - 1);
+      return Token(Types::plus, "+", this->position - 1, 0);
 
     case '-':
-      return Token(Types::minus, "-", this->position - 1);
+      return Token(Types::minus, "-", this->position - 1, 0);
 
     case '=':
-      return Token(Types::equal, "=", this->position - 1);
+      return Token(Types::equal, "=", this->position - 1, 0);
 
     case '*':
-      return Token(Types::asterisk, "*", this->position - 1);
+      return Token(Types::asterisk, "*", this->position - 1, 0);
 
     case '/':
-      return Token(Types::slash, "/", this->position - 1);
+      if (peek(0) == '/') {
+        do {
+          next();
+        } while (this->current != '\n' && this->current != '\0');
+        return Token(Types::skip);
+      }
+      return Token(Types::slash, "/", this->position - 1, 0);
 
     case '\\':
-      return Token(Types::back_slash, "\\", this->position - 1);
+      return Token(Types::back_slash, "\\", this->position - 1, 0);
 
     case '^':
-      return Token(Types::power, "^", this->position - 1);
+      return Token(Types::power, "^", this->position - 1, 0);
 
     case '!':
-      return Token(Types::bang, "!", this->position - 1);
+      return Token(Types::bang, "!", this->position - 1, 0);
 
     case '(':
-      return Token(Types::open_parenthesis, "(", this->position - 1);
+      return Token(Types::open_parenthesis, "(", this->position - 1, 0);
 
     case ')':
-      return Token(Types::close_parenthesis, ")", this->position - 1);
+      return Token(Types::close_parenthesis, ")", this->position - 1, 0);
 
     case '"':
     case '`':
     case '\'': {
       char myQuote = this->current;
-      struct Token token = Token();
+      class Token token = Token();
 
-      token.type = Types::string;
-      token.start = this->position;
+      token.setType(Types::string);
+      token.setStart(this->position);
+      std::string str = "";
       do {
         next();
-        token.content += this->current != myQuote ? this->current : '\0';
+        str += this->current != myQuote ? this->current : '\0';
       } while (this->current != myQuote);
-      token.end = this->position - 1;
+      next();
+      token.setContent(str);
+      token.setEnd(this->position - 1);
 
       return token;
     }
   }
 
   if (isNumber(this->current)) {
-    struct Token token = Token();
+    class Token token = Token();
 
-    token.type = Types::number;
-    token.content = this->current;
+    token.setType(Types::number);
 
-    token.start = this->position - 1;
+    std::string str = {this->current};
+
+    token.setStart(this->position - 1);
     while (isNumber(peek(0))) {
       next();
-      token.content += this->current;
+      str += this->current;
     }
-    token.end = this->position - 1;
+    token.setEnd(this->position - 1);
+
+    token.setContent(str);
 
     return token;
   } else if (isAlpha(this->current) || this->current == '_') {
-    struct Token token = Token();
+    class Token token = Token();
 
-    token.content = this->current;
-    token.start = this->position - 1;
+    std::string str = {this->current};
+
+    token.setStart(this->position - 1);
     while (isAlpha(peek(0)) || isNumber(peek(0)) || peek(0) == '_') {
       next();
-      token.content += this->current;
+      str += this->current;
     }
-    token.end = this->position - 1;
+    token.setEnd(this->position - 1);
+
+    token.setContent(str);
 
     token = matcher(token);
 
@@ -114,15 +129,15 @@ struct Token Lexer::getToken() {
   return Token();
 }
 
-struct Token Lexer::matcher(struct Token token) {
-  if (token.content == "true")
-    token.type = Types::boolean;
-  else if (token.content == "false")
-    token.type = Types::boolean;
-  else if (token.content == "if")
-    token.type = Types::keyword;
+class Token Lexer::matcher(class Token token) {
+  if (token.getContent() == "true")
+    token.setType(Types::boolean);
+  else if (token.getContent() == "false")
+    token.setType(Types::boolean);
+  else if (token.getContent() == "if")
+    token.setType(Types::keyword);
   else
-    token.type = Types::identifier;
+    token.setType(Types::identifier);
   return token;
 }
 

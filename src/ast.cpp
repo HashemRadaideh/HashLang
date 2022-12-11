@@ -3,7 +3,7 @@
 #include "types.hpp"
 
 namespace Hash {
-Expression::Expression(enum Types type, struct Token token) {
+Expression::Expression(enum Types type, class Token token) {
   this->type = type;
   this->token = token;
 }
@@ -16,31 +16,31 @@ void Expression::setType(enum Types type) { this->type = type; }
 
 enum Types Expression::getType() { return this->type; }
 
-struct Token Expression::getValue() { return this->token; }
+class Token Expression::getToken() { return this->token; }
 
-void Expression::getToken(struct Token token) { this->token = token; }
+void Expression::setToken(class Token token) { this->token = token; }
 
-Number::Number(struct Token number) {
+Number::Number(class Token number) {
   this->setType(Types::number);
-  this->getToken(number);
+  this->setToken(number);
 }
 
 Number::Number() { this->setType(Types::number); }
 
 Number::~Number() {}
 
-Boolean::Boolean(struct Token boolean) {
+Boolean::Boolean(class Token boolean) {
   this->setType(Types::boolean);
-  this->getToken(boolean);
+  this->setToken(boolean);
 }
 
 Boolean::Boolean() { this->setType(Types::boolean); }
 
 Boolean::~Boolean() {}
 
-Unary::Unary(struct Token op, class Expression *expression) {
+Unary::Unary(class Token op, class Expression *expression) {
   this->setType(Types::unary);
-  this->getToken(op);
+  this->setToken(op);
   this->expression = expression;
 }
 
@@ -54,11 +54,11 @@ void Unary::setExpression(class Expression *expression) {
   this->expression = expression;
 }
 
-Binary::Binary(class Expression *left, struct Token op,
+Binary::Binary(class Expression *left, class Token op,
                class Expression *right) {
   this->setType(Types::binary);
   this->left = left;
-  this->getToken(op);
+  this->setToken(op);
   this->right = right;
 }
 
@@ -77,10 +77,10 @@ class Expression *Binary::getRight() { return this->right; }
 
 void Binary::setRight(class Expression *expression) { this->right = right; }
 
-Ternary::Ternary(struct Token op, class Expression *left,
+Ternary::Ternary(class Token op, class Expression *left,
                  class Expression *middle, class Expression *right) {
   this->setType(Types::ternary);
-  this->getToken(op);
+  this->setToken(op);
   this->setLeft(left);
   this->middle = middle;
   this->setRight(right);
@@ -94,8 +94,8 @@ class Expression *Ternary::getMiddle() { return this->middle; }
 
 void Ternary::setMiddle(class Expression *middle) { this->middle = middle; }
 
-Parenthesesed::Parenthesesed(struct Token open, class Expression *expression,
-                             struct Token close) {
+Parenthesesed::Parenthesesed(class Token open, class Expression *expression,
+                             class Token close) {
   this->setType(Types::parenthesised);
   this->open = open;
   this->setExpression(expression);
@@ -106,11 +106,20 @@ Parenthesesed::Parenthesesed() { this->setType(Types::parenthesised); }
 
 Parenthesesed::~Parenthesesed() {}
 
-struct Token Parenthesesed::getOpen() { return this->open; }
+class Token Parenthesesed::getOpen() { return this->open; }
 
-void Parenthesesed::setOpen(struct Token open) { this->open = open; }
+void Parenthesesed::setOpen(class Token open) { this->open = open; }
 
-struct Token Parenthesesed::getClose() { return this->close; }
+class Token Parenthesesed::getClose() { return this->close; }
 
-void Parenthesesed::setClose(struct Token close) { this->close = close; }
+void Parenthesesed::setClose(class Token close) { this->close = close; }
+
+String::String(class Token string) {
+  this->setType(Types::string);
+  this->setToken(string);
+}
+
+String::String() { this->setType(Types::string); }
+
+String::~String() {}
 }  // namespace Hash
