@@ -75,7 +75,9 @@ void Binary::setLeft(class Expression *expression) { this->left = expression; }
 
 class Expression *Binary::getRight() { return this->right; }
 
-void Binary::setRight(class Expression *expression) { this->right = right; }
+void Binary::setRight(class Expression *expression) {
+  this->right = expression;
+}
 
 Ternary::Ternary(class Token op, class Expression *left,
                  class Expression *middle, class Expression *right) {

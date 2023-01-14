@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "preLaunchTask": "CMake: build",
-      "program": "${workspaceFolder}${pathSeparator}bin${pathSeparator}hash",
+      "program": "${workspaceFolder}${pathSeparator}build${pathSeparator}hash",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",

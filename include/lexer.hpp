@@ -7,7 +7,7 @@
 namespace Hash {
 class Lexer {
  public:
-  Lexer(std::string&);
+  Lexer(std::string &);
   ~Lexer() = default;
   class Token getToken();
   void next();

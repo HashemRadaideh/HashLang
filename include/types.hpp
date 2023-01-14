@@ -36,4 +36,4 @@ enum class Types {
   skip,
   eof,
 };
-}  // namespace HashLang
+}  // namespace Hash

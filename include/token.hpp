@@ -12,7 +12,7 @@ class Token {
   Token(enum Types);
   Token();
   ~Token();
-  friend std::ostream& operator<<(std::ostream&, const class Token&);
+  friend std::ostream &operator<<(std::ostream &, const class Token &);
   static std::string getTypeof(enum Types);
   enum Types getType();
   void setType(enum Types);

@@ -1,17 +1,34 @@
-cmake_minimum_required(VERSION 3.25.0)
+cmake_minimum_required(VERSION 3.25.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_BINARY_DIR bin)
+set(CMAKE_BINARY_DIR build)
 set(CMAKE_SOURCE_DIR src)
 
 set(NAME hash)
-project(${NAME} VERSION 1.0)
+set(VERSION 0.0.1)
 
-file(GLOB_RECURSE SRC_FILES src/*.cpp)
+project(${NAME} VERSION ${VERSION})
+
+file(GLOB_RECURSE SRC_FILES source/*.cpp)
 add_executable(${NAME} ${SRC_FILES})
-target_include_directories(${NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+
+target_include_directories(${NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+install(
+  TARGETS ${NAME}
+  CONFIGURATIONS Release
+  RUNTIME
+    DESTINATION bin
+    PERMISSIONS
+      OWNER_READ
+      OWNER_WRITE
+      OWNER_EXECUTE
+      GROUP_READ
+      GROUP_EXECUTE
+      WORLD_READ
+      WORLD_EXECUTE)
