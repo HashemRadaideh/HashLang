@@ -19,11 +19,12 @@ Evaluator::Evaluator(std::string &line, bool printTokens = false,
     this->printTree(this->root, true, "", "");
 }
 
-Evaluator::~Evaluator() {}  // delete this->root;
+Evaluator::~Evaluator() {} // delete this->root;
 
 std::string Evaluator::evaluation() {
   enum Types type;
-  if (this->root->getType() == Types::eof) return "";
+  if (this->root->getType() == Types::eof)
+    return "";
   return std::to_string(eval(this->root));
 }
 
@@ -40,7 +41,8 @@ int Evaluator::eval(class Expression *node) {
     int factor = 1;
     if (node->getToken().getContent() != "") {
       class Expression *expr;
-      if (node->getToken().getType() == Types::number) expr = new Number();
+      if (node->getToken().getType() == Types::number)
+        expr = new Number();
       expr->setToken(node->getToken());
       factor = eval(expr);
     }
@@ -55,11 +57,13 @@ int Evaluator::getUnaryOperation(Unary *uni) {
 
   if (type == Types::number) {
     int number = getNumber(uni->getExpression());
-    if (uni->getToken().getType() == Types::minus) return number * -1;
+    if (uni->getToken().getType() == Types::minus)
+      return number * -1;
     return number;
   } else if (type == Types::boolean) {
     int boolean = getBoolean(uni->getExpression());
-    if (uni->getToken().getType() == Types::bang) return !boolean;
+    if (uni->getToken().getType() == Types::bang)
+      return !boolean;
   }
 
   return eval(uni->getExpression());
@@ -72,11 +76,11 @@ int Evaluator::getBinaryOperation(Binary *bin) {
     bool left = getBoolean(bin->getLeft());
     bool right = getBoolean(bin->getRight());
     switch (bin->getToken().getContent()[0]) {
-      case '+':
-        return left || right;
+    case '+':
+      return left || right;
 
-      case '*':
-        return left && right;
+    case '*':
+      return left && right;
     }
   }
 
@@ -84,20 +88,20 @@ int Evaluator::getBinaryOperation(Binary *bin) {
     int left = getNumber(bin->getLeft());
     int right = getNumber(bin->getRight());
     switch (bin->getToken().getContent()[0]) {
-      case '+':
-        return left + right;
+    case '+':
+      return left + right;
 
-      case '-':
-        return left - right;
+    case '-':
+      return left - right;
 
-      case '*':
-        return left * right;
+    case '*':
+      return left * right;
 
-      case '/':
-        return left / right;
+    case '/':
+      return left / right;
 
-      case '^':
-        return pow(left, right);
+    case '^':
+      return pow(left, right);
     }
   }
 
@@ -119,10 +123,14 @@ enum Types Evaluator::getUnaryOperationType(Expression *node) {
 
 enum Types Evaluator::getBinaryOperationType(class Expression *left,
                                              class Expression *right) {
-  if (left->getType() != right->getType()) return Types::unkown;
-  if (left->getType() == Types::string) return Types::string;
-  if (left->getType() == Types::number) return Types::number;
-  if (left->getType() == Types::boolean) return Types::boolean;
+  if (left->getType() != right->getType())
+    return Types::unkown;
+  if (left->getType() == Types::string)
+    return Types::string;
+  if (left->getType() == Types::number)
+    return Types::number;
+  if (left->getType() == Types::boolean)
+    return Types::boolean;
   return Types::unkown;
 }
 
@@ -142,7 +150,8 @@ std::string Evaluator::getString(Expression *node) {
 
 void Evaluator::printTree(class Expression *node, bool isLast = true,
                           std::string indent = "", std::string branch = "") {
-  if (node == nullptr) return;
+  if (node == nullptr)
+    return;
 
   branch = branch != "" ? isLast ? "└──" : "├──" : "";
 
@@ -187,4 +196,4 @@ void Evaluator::printTree(class Expression *node, bool isLast = true,
     printTree(bin->getRight(), true, indent, branch);
   }
 }
-}  // namespace Hash
+} // namespace Hash
